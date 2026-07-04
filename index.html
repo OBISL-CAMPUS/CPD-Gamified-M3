@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Character RPG | Self-Leadership Arena</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Sinhala:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans Sinhala', sans-serif;
+            background-color: #050b18;
+            color: #f4f6fa;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .header-title {
+            font-family: 'Cinzel', serif;
+        }
+        .glass-panel {
+            background: rgba(10, 18, 36, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 163, 89, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .active-tab {
+            border-bottom: 3px solid #d4a359;
+            color: #d4a359 !important;
+            background: rgba(212, 163, 89, 0.05);
+        }
+        .active-sub-tab {
+            background-color: rgba(212, 163, 89, 0.15);
+            border-left: 4px solid #d4a359;
+            color: #f4f6fa !important;
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(212, 163, 89, 0.6);
+        }
+        .btn-game {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            border: 1px solid rgba(212, 163, 89, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-game:hover {
+            border-color: #d4a359;
+            box-shadow: 0 0 15px rgba(212, 163, 89, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .btn-game:active {
+            transform: translateY(1px);
+        }
+        /* Scrollbar styling */
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-900 overflow-x-hidden">
+
+    <!-- FLOATING ACHIEVEMENT TOAST NOTIFIER -->
+    <div id="achievementToast" class="fixed top-24 right-4 z-50 transform translate-x-96 transition-transform duration-500 ease-out flex items-center gap-3 bg-slate-900 border-2 border-amber-500/80 p-4 rounded-xl shadow-2xl max-w-sm pointer-events-none">
+        <div class="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 text-xl shrink-0">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div>
+            <div class="text-[10px] uppercase tracking-wider text-amber-500 font-bold" id="toastHeader">Achievement Unlocked!</div>
+            <h4 class="text-xs sm:text-sm font-extrabold text-slate-100" id="toastTitle">Locus Master</h4>
+            <p class="text-[10px] text-slate-400" id="toastDesc">Earned by deploying strategic transparency.</p>
+        </div>
+    </div>
+
+    <!-- LEVEL UP HERO MODAL OVERLAY -->
+    <div id="levelUpModal" class="fixed inset-0 z-50 bg-slate-950/90 hidden items-center justify-center p-4">
+        <div class="text-center space-y-6 max-w-md">
+            <div class="w-24 h-24 rounded-full border-4 border-amber-500 bg-amber-500/10 flex items-center justify-center text-amber-400 text-4xl mx-auto shadow-2xl animate-pulse">
+                <i class="fa-solid fa-circle-up"></i>
+            </div>
+            <div class="space-y-2">
+                <h1 class="text-3xl sm:text-5xl font-black text-amber-500 header-title tracking-widest text-glow animate-bounce">LEVEL UP</h1>
+                <p class="text-sm font-mono tracking-widest uppercase text-slate-400" id="modalLevelSubtitle">Ego Rank Ascent</p>
+            </div>
+            <div class="p-6 bg-slate-900/80 border border-amber-500/20 rounded-2xl">
+                <h3 class="text-xl font-bold text-slate-200" id="levelNameText">Post-Conventional Master</h3>
+                <p class="text-xs text-slate-400 mt-2" id="levelDescText">You have evolved from external compliance boundaries to autonomous, character-driven self-leadership.</p>
+            </div>
+            <button onclick="closeLevelUpModal()" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl font-black text-sm tracking-widest uppercase transition duration-300" id="btnClaimAscent">
+                Claim Ascent / ඉදිරියට යන්න
+            </button>
+        </div>
+    </div>
+
+    <!-- TOP HEADER HERO PANEL -->
+    <header class="border-b border-amber-500/10 bg-slate-950 sticky top-0 z-40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 min-w-0">
+                <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 animate-spin" style="animation-duration: 25s">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5M12 19.5V21M3.075 12h1.5m16.35 0h1.5m-15.63-6.135l1.06 1.06m11.13 11.13l1.06 1.06m0-13.26l-1.06 1.06m-11.13 11.13l-1.06 1.06" />
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <div class="text-[9px] sm:text-[10px] tracking-widest text-slate-400 font-bold uppercase truncate" id="topNavSmallHeader">Ocean Bridge International</div>
+                    <div class="text-xs sm:text-sm font-bold text-amber-500 tracking-tight text-glow uppercase header-title truncate" id="topNavBigHeader">Character RPG Arena</div>
+                </div>
+            </div>
+
+            <!-- Absolute Language Selection Controller -->
+            <div class="flex items-center space-x-2 shrink-0">
+                <div class="bg-slate-900 border border-slate-800 rounded-lg p-0.5 flex">
+                    <button onclick="setLanguage('EN')" id="btn-lang-en" class="px-2 sm:px-3 py-1.5 rounded font-bold text-[11px] sm:text-xs transition duration-200 bg-amber-500 text-slate-950">EN</button>
+                    <button onclick="setLanguage('SI')" id="btn-lang-si" class="px-2 sm:px-3 py-1.5 rounded font-bold text-[11px] sm:text-xs transition duration-200 text-slate-400 hover:text-slate-100">සිංහල</button>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl px-2 sm:px-3 py-1.5 flex items-center gap-1.5">
+                    <i class="fa-solid fa-crown text-amber-500 animate-pulse text-xs"></i>
+                    <div class="text-left font-mono">
+                        <span class="text-[8px] text-slate-500 block leading-none uppercase" id="egoRankSmallLabel">EGO RANK</span>
+                        <span class="text-[10px] sm:text-xs font-black text-slate-200" id="headerRankLabel">Level 1 (Novice)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN GAME PANEL -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+        
+        <!-- DYNAMIC RPG CHARACTER LEVEL STATS -->
+        <div class="glass-panel rounded-2xl p-4 sm:p-6 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-blue-500/5 pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
+                
+                <div class="space-y-2 flex-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-amber-500 uppercase tracking-widest" id="lblCharacterIndex">Character Growth Index (XP)</span>
+                        <span class="font-mono text-sm text-slate-300 font-bold" id="xpRawText">30 / 100 XP</span>
+                    </div>
+                    <!-- Master Level Progress bar -->
+                    <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800/80">
+                        <div id="characterXpBar" class="bg-gradient-to-r from-amber-500 to-amber-300 h-full transition-all duration-500" style="width: 30%"></div>
+                    </div>
+                </div>
+
+                <!-- Live Game RPG Stats -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:w-auto w-full shrink-0">
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 text-center">
+                        <div class="text-[9px] text-slate-400 uppercase tracking-wider" id="statIntegLabel">Integrity</div>
+                        <div class="text-sm sm:text-base font-black text-amber-500 font-mono" id="statIntegrity">50%</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 text-center">
+                        <div class="text-[9px] text-slate-400 uppercase tracking-wider" id="statCourageLabel">Courage</div>
+                        <div class="text-sm sm:text-base font-black text-cyan-400 font-mono" id="statCourage">40%</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 text-center">
+                        <div class="text-[9px] text-slate-400 uppercase tracking-wider" id="statTranspLabel">Transparency</div>
+                        <div class="text-sm sm:text-base font-black text-emerald-400 font-mono" id="statTransparency">40%</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 text-center">
+                        <div class="text-[9px] text-slate-400 uppercase tracking-wider" id="statProgressLabel">Arena Completion</div>
+                        <div class="text-sm sm:text-base font-black text-blue-400 font-mono animate-pulse" id="progressPct">16%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STICKY ARENA NAVIGATION TABS -->
+        <div class="border-b border-slate-800 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="py-3 px-5 font-bold text-xs sm:text-sm rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-100 transition duration-300 flex items-center gap-2 active-tab">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <span id="tabLabelMap">Quest Map</span>
+            </button>
+            <button onclick="switchTab('simulator')" id="tab-simulator" class="py-3 px-5 font-bold text-xs sm:text-sm rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-100 transition duration-300 flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved animate-pulse text-amber-500"></i>
+                <span id="tabLabelArena">Decision Simulator</span>
+            </button>
+            <button onclick="switchTab('matrix')" id="tab-matrix" class="py-3 px-5 font-bold text-xs sm:text-sm rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-100 transition duration-300 flex items-center gap-2">
+                <i class="fa-solid fa-crosshairs"></i>
+                <span id="tabLabelMatrix">Character Score Matrix</span>
+            </button>
+            <button onclick="switchTab('audit')" id="tab-audit" class="py-3 px-5 font-bold text-xs sm:text-sm rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-100 transition duration-300 flex items-center gap-2">
+                <i class="fa-solid fa-brain"></i>
+                <span id="tabLabelAudit">Locus Diagnostic Audit</span>
+            </button>
+            <button onclick="switchTab('manifesto')" id="tab-manifesto" class="py-3 px-5 font-bold text-xs sm:text-sm rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-100 transition duration-300 flex items-center gap-2">
+                <i class="fa-solid fa-fingerprint"></i>
+                <span id="tabLabelBlueprint">Character Blueprint</span>
+            </button>
+        </div>
+
+        <!-- ==================== TAB: QUEST MAP (GAME LEVELS) ==================== -->
+        <section id="pane-dashboard" class="tab-pane space-y-6">
+            
+            <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 border border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-route animate-bounce"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-slate-200 text-sm" id="mapTitle">Self-Leadership & Character Quest Map</h3>
+                        <p class="text-xs text-slate-400" id="mapDesc">Gain wisdom by navigating through key level challenges.</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 shrink-0 justify-end">
+                    <span class="px-3 py-1 bg-green-500/15 border border-green-500/30 text-green-400 text-[10px] font-bold rounded-lg font-mono" id="badgeIndicatorEn">Level Map: Active</span>
+                </div>
+            </div>
+
+            <!-- Double Nav Grid System -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                
+                <!-- Side Panel Map Units -->
+                <div class="lg:col-span-1 flex lg:flex-col overflow-x-auto lg:overflow-x-visible whitespace-nowrap lg:whitespace-normal gap-2 scrollbar-none pr-1">
+                    <button onclick="switchSyllabusLesson(0)" id="subtab-0" class="flex-1 py-3 px-4 text-xs font-bold rounded-xl text-slate-400 text-left hover:text-slate-100 hover:bg-slate-900/60 border border-slate-800/80 transition duration-200 active-sub-tab flex items-center justify-between">
+                        <span class="truncate" id="menuUnit-0">Quest 1: Inner Governance</span>
+                        <i id="lessonIcon-0" class="fa-solid fa-circle-play text-slate-500 ml-1"></i>
+                    </button>
+                    <button onclick="switchSyllabusLesson(1)" id="subtab-1" class="flex-1 py-3 px-4 text-xs font-bold rounded-xl text-slate-400 text-left hover:text-slate-100 hover:bg-slate-900/60 border border-slate-800/80 transition duration-200 flex items-center justify-between">
+                        <span class="truncate" id="menuUnit-1">Quest 2: Locus & Honesty</span>
+                        <i id="lessonIcon-1" class="fa-solid fa-circle-play text-slate-500 ml-1"></i>
+                    </button>
+                    <button onclick="switchSyllabusLesson(2)" id="subtab-2" class="flex-1 py-3 px-4 text-xs font-bold rounded-xl text-slate-400 text-left hover:text-slate-100 hover:bg-slate-900/60 border border-slate-800/80 transition duration-200 flex items-center justify-between">
+                        <span class="truncate" id="menuUnit-2">Quest 3: Conflict Battles</span>
+                        <i id="lessonIcon-2" class="fa-solid fa-circle-play text-slate-500 ml-1"></i>
+                    </button>
+                    <button onclick="switchSyllabusLesson(3)" id="subtab-3" class="flex-1 py-3 px-4 text-xs font-bold rounded-xl text-slate-400 text-left hover:text-slate-100 hover:bg-slate-900/60 border border-slate-800/80 transition duration-200 flex items-center justify-between">
+                        <span class="truncate" id="menuUnit-3">Quest 4: Moral Ego Levels</span>
+                        <i id="lessonIcon-3" class="fa-solid fa-circle-play text-slate-500 ml-1"></i>
+                    </button>
+                    <button onclick="switchSyllabusLesson(4)" id="subtab-4" class="flex-1 py-3 px-4 text-xs font-bold rounded-xl text-slate-400 text-left hover:text-slate-100 hover:bg-slate-900/60 border border-slate-800/80 transition duration-200 flex items-center justify-between">
+                        <span class="truncate" id="menuUnit-4">Quest 5: Port City Trial</span>
+                        <i id="lessonIcon-4" class="fa-solid fa-circle-play text-slate-500 ml-1"></i>
+                    </button>
+                    <button onclick="switchSyllabusLesson(5)" id="subtab-5" class="flex-1 py-3 px-4 text-xs font-bold rounded-xl text-slate-400 text-left hover:text-slate-100 hover:bg-slate-900/60 border border-slate-800/80 transition duration-200 flex items-center justify-between">
+                        <span class="truncate" id="menuUnit-5">Quest 6: Defense Shield</span>
+                        <i id="lessonIcon-5" class="fa-solid fa-circle-play text-slate-500 ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Live Dynamic Lesson Reader Content -->
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="glass-panel p-6 sm:p-8 rounded-2xl relative overflow-hidden min-h-[350px] flex flex-col justify-between border-amber-500/10" id="syllabusReaderBody">
+                        <!-- Filled Dynamically -->
+                    </div>
+
+                    <!-- Interactive Quick Concept Challenge Card -->
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-amber-500 bg-amber-500/5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-amber-500" id="questChallengeLabel">Concept Checkpoint Challenge</h4>
+                            <span class="text-[10px] text-slate-500 font-mono" id="selfCheckId">Quest 1</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-200 font-semibold" id="selfCheckQuestion">
+                            Is relying entirely on written rules representing the highest stage of personality maturity?
+                        </p>
+                        <div class="flex flex-wrap gap-2.5" id="selfCheckActions">
+                            <!-- Injected Dynamically -->
+                        </div>
+                        <div id="selfCheckFeedback" class="hidden p-3.5 rounded-xl text-xs font-medium bg-slate-950 border border-slate-800/80"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== TAB: SIMULATOR (DUEL ARENA) ==================== -->
+        <section id="pane-simulator" class="tab-pane hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left selection: Scenario nodes -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-slate-200" id="arenaSelectionHeader">Select Battle Node</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+                        
+                        <button onclick="loadScenario(1)" id="btn-scene-1" class="w-full text-left p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 hover:bg-slate-900/80 transition duration-200 flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center shrink-0 font-bold">01</div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-slate-200 text-xs sm:text-sm leading-tight truncate" id="battleName1">The Hotfix Bug Siege</h4>
+                                <p class="text-[10px] text-slate-400 mt-1 truncate" id="battleSub1">Deflect short-term optical choices.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="loadScenario(2)" id="btn-scene-2" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900/80 transition duration-200 flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 font-bold">02</div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-slate-200 text-xs sm:text-sm leading-tight truncate" id="battleName2">The Friendship Bias</h4>
+                                <p class="text-[10px] text-slate-400 mt-1 truncate" id="battleSub2">Stand ground against peer network pressures.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="loadScenario(3)" id="btn-scene-3" class="w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900/80 transition duration-200 flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/15 text-amber-500 flex items-center justify-center shrink-0 font-bold">03</div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-slate-200 text-xs sm:text-sm leading-tight truncate" id="battleName3">Temptation Watch</h4>
+                                <p class="text-[10px] text-slate-400 mt-1 truncate" id="battleSub3">Decline luxury dynamic corporate gifts.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="loadScenario(4)" id="btn-scene-4" class="w-full text-left p-4 rounded-xl border border-amber-500/40 bg-amber-500/5 hover:bg-slate-900/90 transition duration-200 flex items-start gap-4 relative overflow-hidden sm:col-span-2 lg:col-span-1">
+                            <div class="absolute top-0 right-0 bg-amber-500 text-slate-950 font-black text-[9px] px-2 py-0.5 tracking-wider uppercase rounded-bl-lg">Core Case</div>
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 font-bold">CS</div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-slate-100 text-xs sm:text-sm leading-tight truncate" id="battleName4">Port City Competitor Leak</h4>
+                                <p class="text-[10px] text-slate-300 mt-1 truncate" id="battleSub4">Resolve the ultimate competitor file trap.</p>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Achievements cabinet -->
+                    <div class="glass-panel p-4 rounded-xl border border-slate-800 space-y-3">
+                        <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest font-mono" id="achievementsBoxTitle">
+                            <i class="fa-solid fa-trophy"></i> Unlocked Trophies
+                        </h4>
+                        <div class="grid grid-cols-4 gap-2 text-center" id="achievementVault">
+                            <div id="badge-0" class="p-2 rounded bg-slate-950 border border-slate-800 text-xs flex flex-col items-center opacity-40 transition-all duration-300">
+                                <i class="fa-solid fa-book-open text-amber-500 text-lg"></i>
+                                <span class="text-[8px] text-slate-500 block mt-1 uppercase font-bold truncate w-full" id="badgeName0">Learner</span>
+                            </div>
+                            <div id="badge-1" class="p-2 rounded bg-slate-950 border border-slate-800 text-xs flex flex-col items-center opacity-40 transition-all duration-300">
+                                <i class="fa-solid fa-eye text-cyan-400 text-lg"></i>
+                                <span class="text-[8px] text-slate-500 block mt-1 uppercase font-bold truncate w-full" id="badgeName1">Honest</span>
+                            </div>
+                            <div id="badge-2" class="p-2 rounded bg-slate-950 border border-slate-800 text-xs flex flex-col items-center opacity-40 transition-all duration-300">
+                                <i class="fa-solid fa-balance-scale text-emerald-400 text-lg"></i>
+                                <span class="text-[8px] text-slate-500 block mt-1 uppercase font-bold truncate w-full" id="badgeName2">Fairness</span>
+                            </div>
+                            <div id="badge-3" class="p-2 rounded bg-slate-950 border border-slate-800 text-xs flex flex-col items-center opacity-40 transition-all duration-300">
+                                <i class="fa-solid fa-user-shield text-amber-500 text-lg"></i>
+                                <span class="text-[8px] text-slate-500 block mt-1 uppercase font-bold truncate w-full" id="badgeName3">Rohan Shield</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation interface engine -->
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl lg:col-span-2 space-y-6 flex flex-col justify-between min-h-[460px] border-amber-500/20">
+                    <div id="simContent" class="space-y-4">
+                        <!-- Injected Dynamically -->
+                    </div>
+
+                    <!-- Notification alerts -->
+                    <div id="simNotification" class="hidden p-4 rounded-xl text-xs sm:text-sm font-medium transition duration-300 flex items-start gap-3 mt-4">
+                        <i id="notifIcon" class="fa-solid text-base shrink-0 mt-0.5"></i>
+                        <span id="notifMessage"></span>
+                    </div>
+
+                    <!-- Combat choices panel -->
+                    <div id="simActions" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-slate-800">
+                        <!-- Choices injected dynamically -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== TAB: CORE MATRIX CALCULATOR ==================== -->
+        <section id="pane-matrix" class="tab-pane hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Sandbox Configurator -->
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6 lg:col-span-2 border-slate-800">
+                    <div class="border-b border-slate-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-100" id="calcTitle">Calculate Decision Metrics</h3>
+                            <p class="text-xs text-slate-400 mt-0.5" id="calcDesc">Align absolute stakeholder impact with development levels.</p>
+                        </div>
+                        <button onclick="loadSyllabusPreset()" class="px-3.5 py-2 bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500 hover:text-slate-950 rounded-xl text-xs font-bold text-amber-500 transition duration-200" id="btnLoadPreset">
+                            <i class="fa-solid fa-cloud-arrow-down mr-1"></i> <span id="presetBtnLabel">Load Rohan Silva Case Study Parameters</span>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400" id="lblCalcDilemma">Character Dilemma Description</label>
+                        <input type="text" id="dilemmaTitle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500 text-sm" placeholder="Rohan Silva: Leaking competitor data model to win tender.">
+                    </div>
+
+                    <!-- Stakeholders Utility Builder -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400" id="lblCalcForces">Quantified Stakeholder Forces</label>
+                            <button onclick="addStakeholderRow()" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 px-3.5 py-2 rounded-xl font-bold transition duration-200 flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> <span id="btnAddForce">Add Force</span>
+                            </button>
+                        </div>
+
+                        <!-- Stakeholder Rows Container -->
+                        <div id="stakeholderContainer" class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+                            <!-- Generated Dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Kohlberg Ego state Slider -->
+                    <div class="p-4 bg-amber-500/5 rounded-xl border border-amber-500/20 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-bold text-amber-500 uppercase tracking-wider" id="lblCalcMaturity">Moral Maturity Level Modifier</label>
+                            <span id="egoStateIndicator" class="text-xs font-mono font-bold text-amber-400 bg-amber-500/15 px-2.5 py-1 rounded">Post-Conventional</span>
+                        </div>
+                        <input type="range" id="moralEgoSlider" min="1" max="3" value="3" oninput="recalculateUnifiedScore()" class="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                        <div class="flex justify-between text-[8px] sm:text-[10px] text-slate-500 font-bold font-mono">
+                            <span id="lblSliderStage1">Stage 1: Ego / Fear</span>
+                            <span id="lblSliderStage2">Stage 2: Duty / Laws</span>
+                            <span id="lblSliderStage3">Stage 3: Autonomous Integrity</span>
+                        </div>
+                    </div>
+
+                    <!-- Unified Framework Rating Inputs -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" id="lblCalcDeon">Duty & Rule Adherence</label>
+                            <select id="deontologySelect" onchange="recalculateUnifiedScore()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                                <option value="10" id="deonOpt1">Aligning with universal ethical truths</option>
+                                <option value="5" id="deonOpt2">Taking shortcuts to protect optics</option>
+                                <option value="-10" id="deonOpt3">Explicit violation of universal rules</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" id="lblCalcVirtue">Virtue & Character Alignment</label>
+                            <select id="virtueSelect" onchange="recalculateUnifiedScore()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                                <option value="10" id="virtueOpt1">Character-Affirming: Proves highest honor</option>
+                                <option value="0" id="virtueOpt2">Neutral Action: Safe rule following</option>
+                                <option value="-10" id="virtueOpt3">Character-Corrupting: Built on fraud</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unified Result Dashboard -->
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col justify-between space-y-6 text-center border-amber-500/10">
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider font-mono" id="lblMetricResult">Calculated Character Index</h4>
+                        
+                        <!-- Big Score Gauge -->
+                        <div class="relative w-40 h-40 mx-auto flex items-center justify-center bg-slate-950 rounded-full border-4 border-slate-800/80">
+                            <div class="absolute inset-2 rounded-full border border-dashed border-amber-500/20 animate-spin" style="animation-duration: 20s"></div>
+                            <div class="text-center">
+                                <span id="gaugeValue" class="text-4xl font-black text-amber-500 text-glow">0.00</span>
+                                <p class="text-[10px] uppercase text-slate-500 font-bold tracking-wider mt-1 font-mono" id="lblGaugeMaturity">Index Status</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="text-lg font-bold text-slate-100" id="matrixDiagnosisLabel">Awaiting Input Parameters</div>
+                            <p class="text-xs text-slate-400 leading-normal" id="matrixDiagnosisDesc">Input stakeholder values to process character balance metrics.</p>
+                        </div>
+                    </div>
+
+                    <!-- Metric breakdowns -->
+                    <div class="space-y-3 pt-4 border-t border-slate-800 text-left">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-1">
+                                <span id="lblBarUtilitarian">Utilitarian Dynamic</span>
+                                <span id="utilitarianScoreText">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                <div id="utilitarianBar" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-1">
+                                <span id="lblBarDeontological">Deontological Integrity</span>
+                                <span id="deontologyScoreText">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                <div id="deontologyBar" class="bg-blue-400 h-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-1">
+                                <span id="lblBarVirtue">Virtue Alignment</span>
+                                <span id="virtueScoreText">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                <div id="virtueBar" class="bg-green-400 h-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== TAB: Locus of Control Audit ==================== -->
+        <section id="pane-audit" class="tab-pane hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Slippery Slope Quiz Card -->
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl lg:col-span-2 space-y-6">
+                    <div class="border-b border-slate-800 pb-3">
+                        <h3 class="text-xl font-bold text-slate-100" id="auditTitle">Character Drift & Locus Diagnostic</h3>
+                        <p class="text-xs text-slate-400 mt-1" id="auditSub">Check if people-pleasing, authority bias, or blame projection is eroding your boundaries.</p>
+                    </div>
+
+                    <!-- Dynamic Quiz Engine -->
+                    <div id="quizContent" class="space-y-6">
+                        <!-- Filled dynamically -->
+                    </div>
+
+                    <div id="quizActions" class="flex justify-between items-center pt-4 border-t border-slate-800">
+                        <button onclick="prevQuizQuestion()" id="btnPrevQuiz" class="px-4 py-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-lg text-xs sm:text-sm font-semibold transition duration-200">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> <span id="lblQuizBack">Back</span>
+                        </button>
+                        <span id="quizCounter" class="text-xs text-slate-400 font-mono">Question 1 of 5</span>
+                        <button onclick="nextQuizQuestion()" id="btnNextQuiz" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg text-xs sm:text-sm font-bold transition duration-200">
+                            <span id="lblQuizNext">Next</span> <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Diagnostics Dashboard Output -->
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col justify-between space-y-6 relative overflow-hidden border border-slate-800 text-center">
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider" id="lblVulnerabilityHeading">Boundary Drift Risk</h4>
+                        
+                        <div id="gaugeContainer" class="w-full h-32 flex items-end justify-center relative">
+                            <!-- Visual gauge drawing a slope with an animated ball node -->
+                            <svg class="w-full h-24" viewBox="0 0 200 100" fill="none">
+                                <path d="M10 90 L190 30" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
+                                <path id="slopeLine" d="M10 90 L190 30" stroke="#d4a359" stroke-width="8" stroke-linecap="round" stroke-dasharray="180" stroke-dashoffset="180" class="transition-all duration-1000"/>
+                                <circle id="slopeNode" cx="10" cy="90" r="10" fill="#f59e0b" class="transition-all duration-1000"/>
+                            </svg>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="text-lg font-bold text-slate-100" id="auditTitleLabel">Awaiting Input Response</div>
+                            <p class="text-xs text-slate-400 leading-normal" id="auditDescLabel">Answer all items to calculate your cognitive blindspots.</p>
+                        </div>
+                    </div>
+
+                    <!-- Boundary Preservation Advice Output -->
+                    <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 text-left space-y-2">
+                        <div class="text-xs font-bold text-amber-500 uppercase tracking-wider" id="lblStrategyHeader">Self-Leadership Advice</div>
+                        <p class="text-xs text-slate-300 leading-relaxed" id="prescribedStrategyText">Fill all statements to receive boundary protection recommendations.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== TAB: CHARACTER BLUEPRINT ==================== -->
+        <section id="pane-manifesto" class="tab-pane hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Interactive Configurator -->
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl lg:col-span-1 space-y-6">
+                    <div class="border-b border-slate-800 pb-3">
+                        <h3 class="text-xl font-bold text-slate-100" id="blueprintDraftTitle">Your Character Blueprint</h3>
+                        <p class="text-xs text-slate-400 mt-1" id="blueprintDraftDesc">Custom draft your professional identity and non-negotiable boundaries.</p>
+                    </div>
+
+                    <!-- Input Fields -->
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" id="lblBlueprintName">Full Name / Signature</label>
+                            <input type="text" id="manifestoName" oninput="updateManifestoPreview()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500" placeholder="e.g., Rohan Silva">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" id="lblBlueprintAnchor">Primary Leadership Philosophy</label>
+                            <select id="manifestoAnchor" onchange="updateManifestoPreview()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                                <option value="virtue" id="philosophyOpt1">Virtue-Driven Integrity</option>
+                                <option value="duty" id="philosophyOpt2">Universal Duty & Obligation</option>
+                                <option value="transparency" id="philosophyOpt3">Complete Strategic Transparency</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" id="lblBlueprintBoundary">Uncompromising Boundary Anchor</label>
+                            <textarea id="manifestoBoundary" oninput="updateManifestoPreview()" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500 resize-none" placeholder="I will never use leaked competitive layout data for short-term revenue."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Document Preview Frame -->
+                <div class="glass-panel p-8 sm:p-12 rounded-2xl lg:col-span-2 relative overflow-hidden border-2 border-slate-800/80 bg-slate-950/80 space-y-8 flex flex-col justify-between" id="manifestoPreviewFrame">
+                    <!-- Elegant Document Background Marks -->
+                    <div class="absolute inset-0 border border-double border-amber-500/10 m-3 pointer-events-none rounded-xl"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none"></div>
+
+                    <!-- Manifesto Content Inside Document Frame -->
+                    <div class="relative z-10 space-y-6 text-center max-w-2xl mx-auto">
+                        <div class="w-16 h-16 rounded-full border border-amber-500/25 bg-amber-500/5 flex items-center justify-center text-amber-500 mx-auto animate-spin" style="animation-duration: 35s">
+                            <i class="fa-solid fa-id-badge text-xl"></i>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <h2 class="text-xs sm:text-sm uppercase tracking-widest text-amber-500 font-extrabold" id="docSmallTitle">Professional Character Blueprint</h2>
+                            <h1 class="text-xl sm:text-3xl font-extrabold text-slate-100 tracking-tight" id="manifestoTitleName">PROPOSED EXECUTIVE</h1>
+                            <p class="text-[11px] sm:text-xs text-slate-500 font-mono" id="docRankLabel">Certified Character RPG Credentials</p>
+                        </div>
+
+                        <div class="h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent my-6"></div>
+
+                        <!-- Core Declarations -->
+                        <div class="space-y-4 text-left">
+                            <div class="space-y-1">
+                                <span class="text-[10px] uppercase font-bold text-amber-500/80 tracking-widest" id="docSecTitle1">01. Dynamic Decision Framework</span>
+                                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" id="manifestoOutput1">
+                                    I commit to evaluating professional dilemmas through structured stakeholder calculation, completely rejecting uncalibrated gut feeling bias.
+                                </p>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] uppercase font-bold text-amber-500/80 tracking-widest" id="docSecTitle2">02. Value Foundation</span>
+                                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" id="manifestoOutput2">
+                                    My leadership operates from autonomous inner virtues which hold professional honor as a primary, non-negotiable state.
+                                </p>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] uppercase font-bold text-amber-500/80 tracking-widest" id="docSecTitle3">03. Uncompromising Boundary</span>
+                                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" id="manifestoOutput3">
+                                    I pledge to defend my stated boundary rules, recognizing that small operational compromises create the slippery slope of moral erosion.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Signatures & Authority -->
+                        <div class="flex items-center justify-between pt-8 text-xs text-slate-500">
+                            <div class="text-left border-t border-slate-800/80 pt-2 w-1/3">
+                                <p class="font-bold text-slate-400" id="sigName">MEMBER SIGNATURE</p>
+                                <p class="text-[9px]" id="docRegId">Arena Registry ID: AR-09</p>
+                            </div>
+                            <div class="text-center w-1/3">
+                                <div class="w-12 h-12 rounded-full border border-slate-800 flex items-center justify-center mx-auto text-amber-500/20 text-xl">
+                                    <i class="fa-solid fa-stamp"></i>
+                                </div>
+                            </div>
+                            <div class="text-right border-t border-slate-800/80 pt-2 w-1/3">
+                                <p class="font-bold text-slate-400" id="docBoardLabel">BOARD OF STUDY</p>
+                                <p class="text-[9px]" id="docLocationLabel">Colombo, Sri Lanka</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom notification action -->
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-3 relative z-10">
+                        <button onclick="copyManifestoText()" class="px-5 py-2.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-lg text-xs sm:text-sm font-semibold transition duration-200 flex items-center gap-2">
+                            <i class="fa-solid fa-copy"></i>
+                            <span id="btnCopyLabel">Copy Blueprint</span>
+                        </button>
+                        <button onclick="printManifesto()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg text-xs sm:text-sm font-bold transition duration-200 flex items-center gap-2">
+                            <i class="fa-solid fa-print"></i>
+                            <span id="btnPrintLabel">Export / Print</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FLOATING FOOTER -->
+    <footer class="bg-slate-950 text-slate-500 py-6 border-t border-slate-900 mt-12 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <p id="footerCopy">&copy; 2026 Ocean Bridge International (OBISL). All Rights Reserved.</p>
+                <p class="text-slate-600 mt-1" id="footerSub">Character Development Arena | Module 3: Self-Leadership Systems.</p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="https://www.obisl.com" class="hover:text-slate-300 transition" target="_blank">OBISL Official</a>
+                <a href="#" onclick="switchTab('dashboard')" class="hover:text-slate-300 transition" id="footerQuestMapLink">Quest Map</a>
+                <a href="tel:0788030303" class="hover:text-slate-300 transition">Call 0788 03.03.03</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT GAME LOGIC ENGINE -->
+    <script>
+        let currentLang = 'EN'; 
+        let reputationScore = 100;
+        let characterXP = 30; // Starts at level 1 base XP
+        let currentLevel = 1;
+        let activeLessonIndex = 0;
+        let visitedPanes = new Set(['dashboard']);
+        let unlockedBadges = new Set();
+
+        // DEFENSIVE JS PARADIGM: Safe DOM wrappers to block null selection crashes
+        function safeSetText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = value;
+        }
+
+        function safeSetHTML(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = value;
+        }
+
+        function safeStyleWidth(id, pct) {
+            const el = document.getElementById(id);
+            if (el) el.style.width = pct;
+        }
+
+        function safeAddClass(id, className) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add(className);
+        }
+
+        function safeRemoveClass(id, className) {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove(className);
+        }
+
+        // Web Audio Context Synthesizer for Retro Game Effects
+        let audioCtx = null;
+        function playSynthSound(type) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(150, now + 0.1);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, now);
+                    osc.frequency.linearRampToValueAtTime(80, now + 0.3);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'levelUp') {
+                    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, index) => {
+                        const tempOsc = audioCtx.createOscillator();
+                        const tempGain = audioCtx.createGain();
+                        tempOsc.type = 'sine';
+                        tempOsc.frequency.setValueAtTime(freq, now + (index * 0.08));
+                        tempGain.gain.setValueAtTime(0.15, now + (index * 0.08));
+                        tempGain.gain.exponentialRampToValueAtTime(0.005, now + (index * 0.08) + 0.25);
+                        tempOsc.connect(tempGain);
+                        tempGain.connect(audioCtx.destination);
+                        tempOsc.start(now + (index * 0.08));
+                        tempOsc.stop(now + (index * 0.08) + 0.25);
+                    });
+                }
+            } catch (err) {
+                console.warn("Audio Synth is disabled or unsupported.", err);
+            }
+        }
+
+        // Complete 100% Bilingual Dictionary covering every UI aspect
+        const translationDict = {
+            'EN': {
+                'topNavSmallHeader': 'Ocean Bridge International',
+                'topNavBigHeader': 'Character RPG Arena',
+                'egoRankSmallLabel': 'EGO RANK',
+                'lblCharacterIndex': 'Character Growth Index (XP)',
+                'statIntegLabel': 'Integrity',
+                'statCourageLabel': 'Courage',
+                'statTranspLabel': 'Transparency',
+                'statProgressLabel': 'Arena Completion',
+                'tabLabelMap': 'Quest Map',
+                'tabLabelArena': 'Decision Simulator',
+                'tabLabelMatrix': 'Character Score Matrix',
+                'tabLabelAudit': 'Locus Diagnostic Audit',
+                'tabLabelBlueprint': 'Character Blueprint',
+                'mapTitle': 'Self-Leadership & Character Quest Map',
+                'mapDesc': 'Gain wisdom by navigating through key level challenges.',
+                'questChallengeLabel': 'Concept Checkpoint Challenge',
+                'badgeIndicatorEn': 'Level Map: Active',
+                'arenaSelectionHeader': 'Select Battle Node',
+                'battleName1': 'The Hotfix Bug Siege',
+                'battleSub1': 'Deflect short-term optical choices.',
+                'battleName2': 'The Friendship Bias',
+                'battleSub2': 'Stand ground against peer network pressures.',
+                'battleName3': 'Temptation Watch',
+                'battleSub3': 'Decline luxury dynamic corporate gifts.',
+                'battleName4': 'Port City Competitor Leak',
+                'battleSub4': 'Resolve the ultimate competitor file trap.',
+                'achievementsBoxTitle': 'Unlocked Trophies',
+                'badgeName0': 'Learner',
+                'badgeName1': 'Honest',
+                'badgeName2': 'Fairness',
+                'badgeName3': 'Rohan Shield',
+                'calcTitle': 'Calculate Decision Metrics',
+                'calcDesc': 'Align absolute stakeholder impact with development levels.',
+                'presetBtnLabel': 'Load Rohan Silva Case Study Parameters',
+                'lblCalcDilemma': 'Character Dilemma Description',
+                'lblCalcForces': 'Quantified Stakeholder Forces',
+                'btnAddForce': 'Add Force',
+                'lblCalcMaturity': 'Moral Maturity Level Modifier',
+                'lblSliderStage1': 'Stage 1: Ego / Fear',
+                'lblSliderStage2': 'Stage 2: Duty / Laws',
+                'lblSliderStage3': 'Stage 3: Autonomous Integrity',
+                'lblCalcDeon': 'Duty & Rule Adherence',
+                'deonOpt1': 'Aligning with universal ethical truths',
+                'deonOpt2': 'Taking shortcuts to protect optics',
+                'deonOpt3': 'Explicit violation of universal rules',
+                'lblCalcVirtue': 'Virtue & Character Alignment',
+                'virtueOpt1': 'Character-Affirming: Proves highest honor',
+                'virtueOpt2': 'Neutral Action: Safe rule following',
+                'virtueOpt3': 'Character-Corrupting: Built on fraud',
+                'lblMetricResult': 'Calculated Character Index',
+                'lblGaugeMaturity': 'Index Status',
+                'lblBarUtilitarian': 'Utilitarian Dynamic',
+                'lblBarDeontological': 'Deontological Integrity',
+                'lblBarVirtue': 'Virtue Alignment',
+                'auditTitle': 'Character Drift & Locus Diagnostic',
+                'auditSub': 'Check if people-pleasing, authority bias, or blame projection is eroding your boundaries.',
+                'lblQuizBack': 'Back',
+                'lblQuizNext': 'Next',
+                'lblVulnerabilityHeading': 'Boundary Drift Risk',
+                'lblStrategyHeader': 'Self-Leadership Advice',
+                'blueprintDraftTitle': 'Your Character Blueprint',
+                'blueprintDraftDesc': 'Custom draft your professional identity and non-negotiable boundaries.',
+                'lblBlueprintName': 'Full Name / Signature',
+                'lblBlueprintAnchor': 'Primary Leadership Philosophy',
+                'philosophyOpt1': 'Virtue-Driven Integrity',
+                'philosophyOpt2': 'Universal Duty & Obligation',
+                'philosophyOpt3': 'Complete Strategic Transparency',
+                'lblBlueprintBoundary': 'Uncompromising Boundary Anchor',
+                'docSmallTitle': 'Professional Character Blueprint',
+                'docRankLabel': 'Certified Character RPG Credentials',
+                'docSecTitle1': '01. Dynamic Decision Framework',
+                'docSecTitle2': '02. Value Foundation',
+                'docSecTitle3': '03. Uncompromising Boundary',
+                'sigName': 'MEMBER SIGNATURE',
+                'docRegId': 'Arena Registry ID: AR-09',
+                'docBoardLabel': 'BOARD OF STUDY',
+                'docLocationLabel': 'Colombo, Sri Lanka',
+                'btnCopyLabel': 'Copy Blueprint',
+                'btnPrintLabel': 'Export / Print',
+                'footerCopy': '© 2026 Ocean Bridge International (OBISL). All Rights Reserved.',
+                'footerSub': 'Character Development Arena | Module 3: Self-Leadership Systems.',
+                'footerQuestMapLink': 'Quest Map',
+                'modalLevelSubtitle': 'Ego Rank Ascent',
+                'btnClaimAscent': 'Claim Ascent / ඉදිරියට යන්න'
+            },
+            'SI': {
+                'topNavSmallHeader': 'ඕෂන් බ්‍රිජ් ඉන්ටර්නැෂනල්',
+                'topNavBigHeader': 'පෞරුෂත්ව සටන් පිටිය',
+                'egoRankSmallLabel': 'පෞරුෂත්ව මට්ටම',
+                'lblCharacterIndex': 'පෞරුෂත්ව කීර්ති අගය (XP)',
+                'statIntegLabel': 'අඛණ්ඩතාවය',
+                'statCourageLabel': 'ධෛර්යය',
+                'statTranspLabel': 'විනිවිදභාවය',
+                'statProgressLabel': 'ප්‍රගති ප්‍රමාණය',
+                'tabLabelMap': 'වික්‍රම සිතියම',
+                'tabLabelArena': 'චර්යා සිමියුලේටරය',
+                'tabLabelMatrix': 'පෞරුෂත්ව තක්සේරුව',
+                'tabLabelAudit': 'පෞරුෂත්ව විගණනය',
+                'tabLabelBlueprint': 'ප්‍රතිපත්ති පුවරුව',
+                'mapTitle': 'ස්වයං නායකත්ව සහ පෞරුෂත්ව සංවර්ධන සිතියම',
+                'mapDesc': 'විවිධ අභියෝගාත්මක මට්ටම් ජයගනිමින් ප්‍රඥාව සහ පෞරුෂය වර්ධනය කරගන්න.',
+                'questChallengeLabel': 'ක්ෂණික සංකල්පීය පරීක්ෂාව',
+                'badgeIndicatorEn': 'සිතියම: සක්‍රීයයි',
+                'arenaSelectionHeader': 'අභියෝගාත්මක මට්ටම තෝරන්න',
+                'battleName1': 'පද්ධතිමය දෝෂ සඟවා නිකුත් කිරීම',
+                'battleSub1': 'කෙටි කාලීන ප්‍රතිරූප වාසි ප්‍රතික්ෂේප කිරීම.',
+                'battleName2': 'පෞද්ගලික හිතවත්කම්වල බලපෑම',
+                'battleSub2': 'මිත්‍රත්වයේ බලපෑම්වලට නොසැලී මුහුණ දීම.',
+                'battleName3': 'මිල අධික ත්‍යාග සහ සීමාවන්',
+                'battleSub3': 'කීර්තිය ආරක්ෂා කරමින් ත්‍යාග ප්‍රතික්ෂේප කිරීම.',
+                'battleName4': 'කොළඹ වරාය නගර ව්‍යාපෘතිය',
+                'battleSub4': 'ප්‍රතිවාදීන්ගේ රහස්‍ය දත්ත දූෂණය පරාජය කිරීම.',
+                'achievementsBoxTitle': 'ලැබූ කුසලාන',
+                'badgeName0': 'ශිෂ්‍ය',
+                'badgeName1': 'අවංක',
+                'badgeName2': 'සාධාරණ',
+                'badgeName3': 'වරාය කුසලාන',
+                'calcTitle': 'තීරණාත්මක අගයන් ගණනය කිරීම',
+                'calcDesc': 'පාර්ශවකරුවන්ගේ බලපෑම පෞරුෂත්ව සංවර්ධන මට්ටම් සමඟ සසඳන්න.',
+                'presetBtnLabel': 'රොහාන් සිල්වා සිදුවීමේ දත්ත ඇතුළත් කරන්න',
+                'lblCalcDilemma': 'සදාචාරාත්මක අභියෝගයේ විස්තරය',
+                'lblCalcForces': 'පාර්ශවකරුවන්ගේ බලපෑම තක්සේරු කරන්න',
+                'btnAddForce': 'බලවේගයක් එක්කරන්න',
+                'lblCalcMaturity': 'සදාචාරාත්මක පරිණතභාවය',
+                'lblSliderStage1': 'පියවර 1: බිය / ආත්මාර්ථය',
+                'lblSliderStage2': 'පියවර 2: යුතුකම / නීතිය',
+                'lblSliderStage3': 'පියවර 3: ස්වාධීන අඛණ්ඩතාවය',
+                'lblCalcDeon': 'යුතුකම් සහ නීතිවලට ඇති ගරුත්වය',
+                'deonOpt1': 'නිරපේක්ෂ සදාචාර නීතිවලට අනුකූලයි',
+                'deonOpt2': 'ප්‍රතිරූපය රැකීමට ගන්නා සුළු සම්මුතියක්',
+                'deonOpt3': 'සදාචාරාත්මක නීති සෘජුවම උල්ලංඝනය කරයි',
+                'lblCalcVirtue': 'චරිතයේ වර්ධනය සහ ගුණාංග',
+                'virtueOpt1': 'විශිෂ්ඨ: පෞද්ගලික ගෞරවය තහවුරු කරයි',
+                'virtueOpt2': 'සාමාන්‍ය: නීති අනුගමනය කිරීම පමණි',
+                'virtueOpt3': 'පිරිහුණු: වංචාව සහ මුළාව මත ගොඩනැගුනකි',
+                'lblMetricResult': 'ගණනය කළ පෞරුෂත්ව දර්ශකය',
+                'lblGaugeMaturity': 'දර්ශකයේ තත්ත්වය',
+                'lblBarUtilitarian': 'ප්‍රයෝජිතාවාදී අගය',
+                'lblBarDeontological': 'යුතුකම් අනුකූලතාවය',
+                'lblBarVirtue': 'ගුණාත්මක අනුකූලතාවය',
+                'auditTitle': 'පෞරුෂත්ව සීමා ලිහිල් වීමේ විගණනය',
+                'auditSub': 'අන් අය සතුටු කිරීමේ මානසිකත්වය හෝ වැරදි අන් අය පිට පැටවීම වැනි දුර්වලතා පවතීදැයි විමසන්න.',
+                'lblQuizBack': 'පෙර',
+                'lblQuizNext': 'මීළඟ',
+                'lblVulnerabilityHeading': 'සීමා ලිහිල් වීමේ අවදානම',
+                'lblStrategyHeader': 'ස්වයං නායකත්ව නිර්දේශය',
+                'blueprintDraftTitle': 'ඔබේ පෞරුෂත්ව ප්‍රතිපත්ති සැලැස්ම',
+                'blueprintDraftDesc': 'ඔබේ වෘත්තීය අනන්‍යතාවය සහ කවදාවත් සම්මුතියකට නොඑන සීමාවන් සකස් කරන්න.',
+                'lblBlueprintName': 'සම්පූර්ණ නම / අත්සන',
+                'lblBlueprintAnchor': 'ප්‍රධාන නායකත්ව දර්ශනය',
+                'philosophyOpt1': 'අභ්‍යන්තර සදාචාරාත්මක ගුණධර්ම',
+                'philosophyOpt2': 'නිරපේක්ෂ යුතුකම් සහ වගකීම්',
+                'philosophyOpt3': 'උපායමාර්ගික විනිවිදභාවය',
+                'lblBlueprintBoundary': 'එකඟ නොවන මූලික ප්‍රතිපත්ති සීමාව',
+                'docSmallTitle': 'වෘත්තීය පෞරුෂත්ව ප්‍රතිපත්ති ප්‍රකාශය',
+                'docRankLabel': 'සහතික කළ පෞරුෂ සංවර්ධන අක්තපත්‍ර',
+                'docSecTitle1': '01. තාර්කික තීරණ ගැනීමේ රාමුව',
+                'docSecTitle2': '02. සදාචාරාත්මක වටිනාකම් පදනම',
+                'docSecTitle3': '03. කිසිවිටෙක සම්මුතියකට නොඑන සීමා',
+                'sigName': 'සාමාජික අත්සන',
+                'docRegId': 'ලියාපදිංචි අංකය: AR-09',
+                'docBoardLabel': 'අධ්‍යයන මණ්ඩලය',
+                'docLocationLabel': 'කොළඹ, ශ්‍රී ලංකාව',
+                'btnCopyLabel': 'පිටපත් කරන්න',
+                'btnPrintLabel': 'මුද්‍රණය කරන්න',
+                'footerCopy': '© 2026 ඕෂන් බ්‍රිජ් ඉන්ටර්නැෂනල් (OBISL). සියලුම හිමිකම් ඇවිරිණි.',
+                'footerSub': 'පෞරුෂත්ව සංවර්ධන අරණ | 03 මොඩියුලය: ස්වයං-නායකත්ව පද්ධති.',
+                'footerQuestMapLink': 'වික්‍රම සිතියම',
+                'modalLevelSubtitle': 'පෞරුෂත්ව මට්ටම ඉහළ යාම',
+                'btnClaimAscent': 'අනුමැතිය ලබාගන්න / Claim Ascent'
+            }
+        };
+
+        // Verbatim Syllabus Content with all study notes extracted through gamified phrasing
+        const syllabusLessons = [
+            {
+                id: 0,
+                titleEn: "Self-Leadership Over Written Rules",
+                titleSi: "නීති පද්ධති අභිබවා යන ස්වයං පාලනය",
+                textEn: `
+                    <p class="mb-4">Personality development begins when an individual transitions from <strong>external compliance</strong> (governed by fear of punishment) to <strong>internalized virtue ethics</strong> (self-leadership driven by who you are).</p>
+                    <p class="mb-4">Relying entirely on corporate rulebooks represents an immature state of personality development. It cultivates loophole-seeking behaviors. Authentic character (derived from the Latin <em>integer</em>, meaning undivided) is an unshakeable asset where professional decisions mirror your core self.</p>
+                    <h4 class="font-bold text-amber-500 mb-2">Core Gameplay Objectives:</h4>
+                    <ul class="list-disc list-inside space-y-1 text-slate-300">
+                        <li>Differentiate external compliance (low-maturity ego preservation) from autonomous virtue ethics.</li>
+                        <li>Identify cognitive blindspots in reporting formats—recognizing that selective honesty is often an ego-defense mechanism.</li>
+                    </ul>
+                `,
+                textSi: `
+                    <p class="mb-4">පෞරුෂ සංවර්ධනයේ මූලික පියවර වනුයේ බාහිර නීති රීතිවලට බියෙන් ක්‍රියා කිරීමෙන් (External Compliance) මිදී, තමන්ගේම අභ්‍යන්තර සදාචාරාත්මක වටිනාකම් (Virtue Ethics) මත පිහිටා තීරණ ගැනීමට පටන් ගැනීමයි.</p>
+                    <p class="mb-4">ආයතනික නීති මත පමණක් යැපීම පුද්ගල පෞරුෂත්වයේ අඩු පරිණත බවක් පෙන්නුම් කරයි. එයින් නීතියේ සිදුරු සෙවීමේ මනෝභාවයක් ඇතිවිය හැක. අඛණ්ඩතාවය (Integer - නොබෙදුණු ස්වයං පාලනය) යනු ඕනෑම අවස්ථාවක තම ප්‍රතිපත්තිවලට එකඟව ක්‍රියා කිරීමයි.</p>
+                `,
+                checkQuestion: "Is relying entirely on written handbooks representing the highest stage of Personal Development?",
+                checkQuestionSi: "ලියන ලද නීති පද්ධතියක් මත පමණක් දැඩිව විශ්වාසය තැබීම, පුද්ගල සංවර්ධනයේ ඉහළම පෞරුෂත්ව පරිණතභාවය නිරූපණය කරයිද?",
+                checkOptions: [
+                    { textEn: "Yes, because handbooks eliminate risk.", textSi: "ඔව්, එයින් නීතිමය අවදානම් අවම වේ.", isCorrect: false, explanation: "Handbooks only represent the minimum legal baselines; true personal maturity requires autonomous values." },
+                    { textEn: "No, written rules encourage loophole-seeking.", textSi: "නැත, එය සිදුරු සෙවීමේ සීමාන්තික මානසිකත්වයකට මඟ පාදයි.", isCorrect: true, explanation: "Correct. Personal growth transitions the individual from fear of outer punishment to internally anchored self-leadership." }
+                ]
+            },
+            {
+                id: 1,
+                titleEn: "Locus of Control & Strategic Transparency",
+                titleSi: "මනෝවිද්‍යාත්මක පාලන කේන්ද්‍රය සහ උපායමාර්ගික විනිවිදභාවය",
+                textEn: `
+                    <p class="mb-4">Personality types operating under an <strong>Internal Locus of Control</strong> believe they own their choices and direct consequences. Conversely, those under an <strong>External Locus of Control</strong> blame situations or management for ethical compromises.</p>
+                    <p class="mb-4"><strong>Strategic Transparency vs. Selective Honesty:</strong> Selective honesty is a cognitive defense mechanism used to hide vulnerabilities while appearing technically correct. True personal maturity requires Strategic Transparency—proactively revealing full operational contexts and failure risks, prioritizing institutional trust over short-term personal optics.</p>
+                `,
+                textSi: `
+                    <p class="mb-4">අභ්‍යන්තර පාලන කේන්ද්‍රයක් (Internal Locus of Control) ඇති පුද්ගලයින් තමන්ගේ තීරණවල වගකීම තමන්ම භාර ගනී. නමුත් බාහිර පාලන කේන්ද්‍රයක් ඇති පුද්ගලයින් සදාචාරාත්මක බිඳවැටීම් සඳහා තත්ත්වයන්ට හෝ කළමනාකාරීත්වයට දොස් පවරයි.</p>
+                    <p class="mb-4">විනිවිදභාවය පෞද්ගලික ප්‍රතිරූපයට තර්ජනයක් වුවද, ආයතනයේ ආරක්ෂාව වෙනුවෙන් සම්පූර්ණ තොරතුරු සහ ගැටලු හෙළිදරව් කිරීමට ඉල්ලා සිටී. මෙය උසස් පෞරුෂත්වයක ලක්ෂණයකි.</p>
+                `,
+                checkQuestion: "Which parameter prioritizes systemic institutional trust over personal short-term optics?",
+                checkQuestionSi: "කෙටි කාලීන පෞද්ගලික ප්‍රතිරූපයට වඩා ආයතනික විශ්වාසය ආරක්ෂා කිරීමට මඟ පාදන්නේ කුමක්ද?",
+                checkOptions: [
+                    { textEn: "Selective Honesty", textSi: "තෝරාගත් අවංකභාවය", isCorrect: false, explanation: "Selective honesty is an ego-preservation mechanism to hide system flaws." },
+                    { textEn: "Strategic Transparency", textSi: "උපායමාර්ගික විනිවිදභාවය", isCorrect: true, explanation: "Correct! Transparency requires overcoming fear of vulnerability to protect the institution." }
+                ]
+            },
+            {
+                id: 2,
+                titleEn: "Isolating Conflicts of Interest and Social Triggers",
+                titleSi: "ගැටුම්කාරී තත්ත්වයන් (Cols) සහ සමාජීය බලපෑම්",
+                textEn: `
+                    <p class="mb-4">Highly networked commercial environments often blur professional responsibilities and personal school alumni/familial relationships. Handling Conflicts of Interest (CoI) is an active psychological skill. It requires drawing clear professional boundaries without compromising emotional maturity.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                        <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                            <span class="font-bold text-red-400">Actual:</span> Direct real-time clash between private interests and corporate duty.
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                            <span class="font-bold text-amber-400">Potential:</span> Emerging private relationships that could overlap with future roles.
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                            <span class="font-bold text-blue-400">Apparent:</span> Observers logically suspect bias. Damages trust exactly like actual conflicts.
+                        </div>
+                    </div>
+                `,
+                textSi: `
+                    <p class="mb-4">මිතුරන් හෝ පවුලේ සබඳතා වෘත්තීය වගකීම් සමඟ පටලවා නොගැනීම සැබෑ පෞරුෂත්ව පරිණතභාවයකි. CoI ආකාර 3කි:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                        <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                            <span class="font-bold text-red-400">සැබෑ ගැටුම (Actual):</span> වර්තමාන සෘජු වාසි සහ වෘත්තීය වගකීම් අතර ගැටුමකි.
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                            <span class="font-bold text-amber-400">විභව ගැටුම (Potential):</span> අනාගතයේදී ගැටිය හැකි නැගී එන පෞද්ගලික සබඳතා.
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                            <span class="font-bold text-blue-400">දෘශ්‍යමාන ගැටුම (Apparent):</span> බාහිර පුද්ගලයෙකුට පක්ෂග්‍රාහීත්වයක් පෙනෙන්නට තිබීම. මෙයද දැඩිව පාලනය කළ යුතුය.
+                        </div>
+                    </div>
+                `,
+                checkQuestion: "How should an emotionally mature executive handle an Apparent Conflict of Interest?",
+                checkQuestionSi: "පෞරුෂත්ව අතින් පරිණත නිලධාරියෙකු දෘශ්‍යමාන ගැටුමකදී ක්‍රියා කළ යුත්තේ කෙසේද?",
+                checkOptions: [
+                    { textEn: "Keep quiet if objective bias isn't technically real.", textSi: "තාක්ෂණිකව වරදක් නැතිනම් නිහඬව සිටීම.", isCorrect: false, explanation: "An apparent conflict damages trust exactly like an actual one; transparency is required." },
+                    { textEn: "Submit formal disclosures and recuse yourself.", textSi: "නිල වශයෙන් තොරතුරු හෙළිදරව් කර ඇගයීම්වලින් ඉවත් වීම.", isCorrect: true, explanation: "Correct! Protecting institutional neutrality secures your character capital." }
+                ]
+            },
+            {
+                id: 3,
+                titleEn: "Kohlberg's Stages of Moral Development & Self-Leadership",
+                titleSi: "කෝල්බර්ග්ගේ සදාචාර සංවර්ධනය සහ ස්වයං-නායකත්වය",
+                textEn: `
+                    <p class="mb-4">Personal maturity can be mapped directly to Lawrence Kohlberg's stages of moral growth:</p>
+                    <ul class="list-inside list-disc space-y-2 text-slate-300 text-xs sm:text-sm">
+                        <li><strong class="text-red-400">Stage 1: Pre-Conventional (Ego-Driven):</strong> Focuses entirely on punishment avoidance, immediate rewards, and transactional trade-offs.</li>
+                        <li><strong class="text-amber-400">Stage 2: Conventional (Approval-Seeking):</strong> Conforming to corporate culture, manager expectations, and handbook guidelines out of people-pleasing needs.</li>
+                        <li><strong class="text-green-400">Stage 3: Post-Conventional (Principled):</strong> Acting based on absolute internal integrity, universal ethical rules, and authentic character capital, regardless of penalty outcomes.</li>
+                    </ul>
+                `,
+                textSi: `
+                    <p class="mb-4">කෝල්බර්ග්ගේ න්‍යාය අනුව පෞරුෂත්ව පරිණතභාවය ප්‍රධාන පියවර 3කි:</p>
+                    <ul class="list-inside list-disc space-y-2 text-slate-300 text-xs sm:text-sm">
+                        <li><strong class="text-red-400">පූර්ව-සම්මුතික (Pre-Conventional):</strong> දඬුවම් මඟහැරීම සහ කෙටි කාලීන වාසි ලබාගැනීම මත පමණක් තීරණ ගැනීම.</li>
+                        <li><strong class="text-amber-400">සම්මුතික (Conventional):</strong> අන් අයගේ අනුමැතිය හෝ ආයතනික නීතිවලට පමණක් එකඟ වී ක්‍රියා කිරීම.</li>
+                        <li><strong class="text-green-400">පශ්චාත්-සම්මුතික (Post-Conventional):</strong> අවාසි සහගත ප්‍රතිඵල ආවත් තමන්ගේ අභ්‍යන්තර සදාචාරය මත පිහිටා ක්‍රියා කිරීම.</li>
+                    </ul>
+                `,
+                checkQuestion: "Conforming to rules purely to seek peer approval and avoid being labeled a disruptor is which moral level?",
+                checkQuestionSi: "කණ්ඩායමේ කැමැත්ත ලබා ගැනීමට සහ බාධා කරන්නෙකු ලෙස ලේබල් නොවීමට නීතිවලට එකඟ වීම කුමන මට්ටමට අයත් වේද?",
+                checkOptions: [
+                    { textEn: "Conventional stage", textSi: "සම්මුතික මට්ටම", isCorrect: true, explanation: "Conventional morality is driven by social approval and group conformity." },
+                    { textEn: "Post-Conventional stage", textSi: "පශ්චාත්-සම්මුතික මට්ටම", isCorrect: false, explanation: "Post-conventional morality transcends group pressure to uphold absolute universal truths." }
+                ]
+            },
+            {
+                id: 4,
+                titleEn: "Colombo Port City: Rohan Silva's Identity Test",
+                titleSi: "රොහාන් සිල්වාගේ සිදුවීම: පෞරුෂත්ව පරික්ෂාව",
+                textEn: `
+                    <p class="mb-3"><strong>The Colombo Port City Logistics Bid:</strong> Rohan Silva, VP of Business Development at Apex Infrastructure Solutions, leads a high-stakes maritime tender. Three weeks before submission, Rohan receives an anonymous leak of competitor financial pricing models.</p>
+                    <p class="mb-3">The CFO uses rationalization traps: <em>'We didn't steal this, it was delivered. If we don't, competitor might. Sri Lankan labor depends on this.'</em> This is standard <strong>Pre-Conventional moral reasoning</strong> dressed as corporate utility. Rohan's authentic self-leadership was tested: would he build his career on stolen data?</p>
+                `,
+                textSi: `
+                    <p class="mb-3"><strong>රොහාන් සිල්වාගේ සිදුවීම:</strong> මූල්‍ය නිලධාරියා පවසන්නේ 'අප මෙය නොකළහොත්, අපගේ තරඟකරුවන් අපට එරෙහිව මෙවැනි දේ කරනු ඇත.' මෙය තමන්ගේ අවංකභාවය පාවා දීමට ගන්නා ව්‍යාජ තර්කයකි. රොහාන්ගේ පෞරුෂය පරීක්ෂාවට ලක්වූයේ මෙවැනි සොරකම් කළ දත්ත මත තමන්ගේ වෘත්තීය ප්‍රතිරූපය ගොඩනැගීමට එකඟ වන්නේද යන්න මතය.</p>
+                `,
+                checkQuestion: "The CFO's argument that 'others would do it too' represents which psychological bias?",
+                checkQuestionSi: "මූල්‍ය නිලධාරියා ඉදිරිපත් කරන 'අන් අයත් මෙසේ කරනු ඇත' යන තර්කය කුමන මනෝවිද්‍යාත්මක දෝෂයක්ද?",
+                checkOptions: [
+                    { textEn: "Social Conformity & Rationalization Bias", textSi: "සමාජ අනුකූලතාවය සහ සාධාරණීකරණය කිරීමේ නැඹුරුතාවය", isCorrect: true, explanation: "Rationalization bias distorts moral boundaries to ease cognitive dissonance." },
+                    { textEn: "Internal Locus of Control", textSi: "අභ්‍යන්තර පාලන කේන්ද්‍රය", isCorrect: false, explanation: "An internal locus of control takes personal responsibility rather than blaming outside expectations." }
+                ]
+            },
+            {
+                id: 5,
+                titleEn: "Preventing Boundary Decay & Reputational Capital",
+                titleSi: "පෞරුෂත්ව සීමාවන් ලිහිල් වීම වැළැක්වීම",
+                textEn: `
+                    <p class="mb-4"><strong>The Slippery Slope Phenomenon:</strong> Minor, uncorrected compromises in daily operations slowly alter an executive's moral compass. Over time, these micro-shifts lead to massive professional collapse.</p>
+                    <p class="mb-4">Developing an unshakeable <strong>Personality Blueprint</strong> protects professional boundaries. High integrity is not a theoretical ideal; it generates real Reputational Capital, which reduces transactional friction and builds unshakeable corporate trust.</p>
+                `,
+                textSi: `
+                    <p class="mb-4"><strong>ලිස්සන සුළු බෑවුම (Slippery Slope):</strong> දෛනික කටයුතුවලදී සිදුකරන කුඩා සදාචාරාත්මක සම්මුතීන් කාලයත් සමඟ නොදැනුවත්වම විශාල වෘත්තීයමය බිඳවැටීම් කරා පුද්ගලයා මෙහෙයවයි. පෞද්ගලික අනන්‍යතාවය ශක්තිමත් කිරීමෙන් මෙය වළක්වා ගත හැක.</p>
+                `,
+                checkQuestion: "Can high personal integrity serve as a tangible economic asset?",
+                checkQuestionSi: "ආයතනයක පවතින සදාචාරාත්මක කීර්තියට සැබෑ ආර්ථිකමය වටිනාකමක් තිබේද?",
+                checkOptions: [
+                    { textEn: "Yes, it constructs Reputational Capital.", textSi: "ඔව්, එය පාරිභෝගික සහ ආයෝජක විශ්වාසය ගොඩනගයි.", isCorrect: true, explanation: "High integrity is an economic capital asset that secures partnerships during unstable economic cycles." },
+                    { textEn: "No, integrity is purely a personal qualitative matter.", textSi: "නැත, එය පුද්ගලික කාරණයක් පමණක් වන අතර ආර්ථිකමය අගයක් නැත.", isCorrect: false, explanation: "Integrity actively lowers transaction friction and builds unshakeable stakeholder capital." }
+                ]
+            }
+        ];
+
+        // Gamified Quiz Questions targeting psychological variables
+        const quizQuestions = [
+            {
+                qEn: "How do you react to direct social/executive pressure to sign off on an incomplete or unchecked deliverable?",
+                qSi: "අසම්පූර්ණ හෝ අසත්‍ය වාර්තාවක් සහතික කරන ලෙස ප්‍රධානීන්ගෙන් දැඩි පීඩනයක් එල්ල වූ විට ඔබ ප්‍රතිචාර දක්වන්නේ කෙසේද?",
+                options: [
+                    { textEn: "Uphold absolute boundary (Internal Locus)", textSi: "අභ්‍යන්තර සීමාවන් දැඩිව රකිනවා (ස්වයං පාලනය)", weight: 0 },
+                    { textEn: "Reluctantly sign, rationalizing that rules can be adapted", textSi: "තත්ත්වයට ගැලපෙන ලෙස නීති වෙනස් කළ හැකි යැයි සලකා අත්සන් කරනවා", weight: 3 },
+                    { textEn: "Conform immediately to protect career optics (External Locus)", textSi: "ප්‍රතිරූපය බේරා ගැනීමට වහාම එකඟ වනවා (බාහිර පාලනය)", weight: 5 }
+                ]
+            },
+            {
+                qEn: "When building business alliances, how do you handle childhood friendship networks or alumni preferences?",
+                qSi: "ව්‍යාපාරික කටයුතු සිදුකිරීමේදී පාසල් ආදි ශිෂ්‍ය හෝ ළමා කාලයේ මිත්‍රත්වයන් ඔබ ක්‍රියාත්මක කරන්නේ කෙසේද?",
+                options: [
+                    { textEn: "Maintain strict neutrality; file conflict disclosures proactively", textSi: "සම්පූර්ණයෙන්ම මධ්‍යස්ථව ක්‍රියා කරනවා; අදාළ සබඳතා හෙළිදරව් කරනවා", weight: 0 },
+                    { textEn: "Allow minor advantages to friends if rules aren't strictly breached", textSi: "නීතිය කෙලින්ම කැඩෙන්නේ නැතිනම් මිතුරන්ට සුළු වාසි සලසනවා", weight: 3 },
+                    { textEn: "Prioritize alumni connections over merit; trust is built on familiar networks", textSi: "මිත්‍රත්වයට මුල් තැන දෙනවා; විශ්වාසය පවතින්නේ හඳුනන අය අතරයි", weight: 5 }
+                ]
+            },
+            {
+                qEn: "What is your main decision-making mindset when faced with an ethical gray area missing written guidelines?",
+                qSi: "ආයතනික නීති පොතේ සඳහන් නොවන අළු කලාපයක (grey-area) ගැටලුවක් මතු වූ විට ඔබ තීරණයක් ගන්නේ කුමන පදනමක් මතද?",
+                options: [
+                    { textEn: "Use the Multi-Lens Matrix to align action with character principles", textSi: "බහුවිධ කාච රාමුව: පාර්ශවකරුවන්ගේ වාසි සහ සදාචාරාත්මක අගයන් ඇගයීම", weight: 0 },
+                    { textEn: "Rely on subjective gut feeling or intuitive assumptions", textSi: "මගේ සහජ හැඟීම: මගේ සිතට හරි යැයි හැඟෙන දේ කිරීම", weight: 3 },
+                    { textEn: "Assess whatever maximizes dynamic profitability with lowest penalty risk", textSi: "අඩුම නීතිමය අවදානම සහ උපරිම ආර්ථික වාසිය ලැබෙන ක්‍රමය සෙවීම", weight: 5 }
+                ]
+            },
+            {
+                qEn: "How do you perceive high-value luxury tokens or gifts from overseas strategic partners?",
+                qSi: "විශාල ව්‍යාපෘතියක් අවසානයේ විදේශීය හවුල්කරුවන්ගෙන් ලැබෙන මිල අධික පුද්ගලික ත්‍යාග ඔබ සලකන්නේ කෙසේද?",
+                options: [
+                    { textEn: "Refuse personal possession to prevent subtle psychological bias", textSi: "පෞද්ගලිකව ගැනීම ප්‍රතික්ෂේප කරනවා; එයින් අපක්ෂපාතීත්වය බිඳ වැටිය හැක", weight: 0 },
+                    { textEn: "Accept them, rationalizing them as harmless cultural tokens", textSi: "සංස්කෘතික ගෞරවයක් ලෙස සලකා ත්‍යාගය පෞද්ගලිකව භාරගන්නවා", weight: 3 },
+                    { textEn: "Active pride; status symbols enhance personal professional authority", textSi: "ආඩම්බරයෙන් භාරගන්නවා; එය මගේ පෞද්ගලික තත්වය ඉහළ නංවයි", weight: 5 }
+                ]
+            },
+            {
+                qEn: "Before signing employment contracts, how thoroughly do you examine the prospective employer's culture of failure and biases?",
+                qSi: "නව රැකියාවකට සම්බන්ධ වීමට පෙර, එම ආයතනයේ සැබෑ සදාචාරාත්මක ස්වභාවය සහ වැරදීම්වලට දක්වන ප්‍රතිචාරය ඔබ පරීක්ෂා කරන්නේද?",
+                options: [
+                    { textEn: "Proactive cultural vetting via networks, bypassing marketing hype", textSi: "සංස්කෘතික සත්‍යාපනය: සේවකයින්ගෙන් ආයතනයේ සැබෑ තොරතුරු සෙවීම", weight: 0 },
+                    { textEn: "Depend on public CSR and employee branding claims", textSi: "ප්‍රචාරණ දත්ත: ඔවුන්ගේ වෙබ් අඩවිවල ඇති දත්ත විශ්වාස කිරීම", weight: 3 },
+                    { textEn: "Purely transactional; salary scale and personal metrics are all that matter", textSi: "මූල්‍යමය: වැටුප සහ අනෙකුත් වරප්‍රසාද පිළිබඳව පමණක් බැලීම", weight: 5 }
+                ]
+            }
+        ];
+        let quizAnswers = Array(quizQuestions.length).fill(null);
+        let quizIndex = 0;
+
+        // DUEL ARENA SCENARIOS DATA
+        const scenarios = [
+            {
+                id: 1,
+                titleEn: "The Accelerated Tech Sync Bug",
+                titleSi: "කාලසීමාවන් සහ පද්ධතිමය දෝෂ",
+                descEn: "Your project team is facing intense pressure to sign off on a fixed-deadline finance software deployment. Optimization tests detect a synchronization bug that drops operational logs occasionally. The account manager insists on pushing a silent hotfix post-launch to bypass hefty financial penalties.",
+                descSi: "නියමිත දිනට මූල්‍ය මෘදුකාංග පද්ධතියක් පාරිභෝගිකයාට භාරදීමට දැඩි පීඩනයක් එල්ල වී ඇත. අවසන් පරීක්ෂණවලදී දත්ත ගබඩා වීමේ දෝෂයක් (synchronization bug) හඳුනා ගැනේ. මූල්‍ය දඩ මුදල් මඟහරවා ගැනීම සඳහා පද්ධතිය මුලින් භාරදී, පසුව රහසිගතව දෝෂය නිවැරදි කරමු යැයි ගනුදෙනු භාර කළමනාකරු යෝජනා කරයි.",
+                choices: [
+                    {
+                        textEn: "Sign off now and silent hotfix later (Avoid immediate fines)",
+                        textSi: "දැනට භාරදී පසුව රහසිගතව දෝෂය සකස් කරන්න (දඩ මුදල් වැළැක්වීමට)",
+                        reputationImpact: -25,
+                        feedbackEn: "Failure of Virtue Ethics. You prioritized short-term corporate optics over strategic transparency. If exposed, future trust collapses.",
+                        feedbackSi: "සදාචාරාත්මක ගුණාංග පිරිහීමකි. ඔබ ආයතනයේ ක්ෂණික වාසි සඳහා පද්ධතිමය විනිවිදභාවය පාවා දුන්නේය. මෙවැනි තීරණ අනාගත විශ්වාසය බිඳ දමයි.",
+                        type: "deceptive"
+                    },
+                    {
+                        textEn: "Reject sign-off, report transparently, and build partnership trust",
+                        textSi: "දෝෂය විනිවිදභාවයෙන් ගනුදෙනුකරුට හෙළි කර කල් ඉල්ලන්න",
+                        reputationImpact: 10,
+                        feedbackEn: "Virtue Ethics and Deontology Victory! You declined falsifying documentation, protected baseline standards, and generated high reputation capital.",
+                        feedbackSi: "සදාචාරාත්මක ජයග්‍රහණයකි! ඔබ අසත්‍ය ලේඛන සැකසීම ප්‍රතික්ෂේප කර සැබෑ වෘත්තීය ගෞරවය සහ විශ්වාසය තහවුරු කළේය.",
+                        type: "principled"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                titleEn: "Alumni Vendor Conflict of Interest",
+                titleSi: "හිතවත්කම් සහ ටෙන්ඩර් විනිවිදභාවය",
+                descEn: "You are the procurement head handling an open commercial tender. A competitive bid arrives from a childhood friend and school alumnus, who privately calls you pleading for the contract to save his company from liquidation.",
+                descSi: "ඔබ ආයතනයේ ටෙන්ඩර් මණ්ඩලයේ ප්‍රධානියා වේ. ඔබගේ ළමා කාලයේ මිතුරෙකුගේ සහ පාසල් ආදි ශිෂ්‍යයෙකුගේ සමාගමකින් තරඟකාරී ලංසුවක් ලැබී ඇත. තම ආයතනය බංකොලොත් වීමෙන් බේරාගැනීමට මෙම ටෙන්ඩරය ලබා දෙන ලෙස ඔහු පෞද්ගලිකව ඉල්ලීමක් කරයි.",
+                choices: [
+                    {
+                        textEn: "Quietly adjust evaluation criteria to favor his bid to save his staff",
+                        textSi: "ඔහුගේ සේවකයින් රැකීමට, ඇගයීම් ලකුණු ඔහුට වාසි වන සේ වෙනස් කරන්න",
+                        reputationImpact: -30,
+                        feedbackEn: "Actual Conflict of Interest violation. You allowed network relationships to compromise objectivity, breaking fiduciary responsibilities.",
+                        feedbackSi: "සත්‍ය ගැටුම්කාරී තත්ත්වයකි. ඔබ පෞද්ගලික හිතවත්කම් මත ආයතනික සාධාරණත්වය සහ ව්‍යවස්ථාපිත නීති උල්ලංඝනය කළේය.",
+                        type: "deceptive"
+                    },
+                    {
+                        textEn: "Log official disclosure with HR/Legal and step down from evaluation",
+                        textSi: "පෞද්ගලික හිතවත්කම නිල වශයෙන් දැනුම් දී ඇගයීම් මණ්ඩලයෙන් ඉවත් වන්න",
+                        reputationImpact: 15,
+                        feedbackEn: "Apparent CoI successfully mitigated. You logged formal documentation, protected your professional boundaries, and guaranteed institutional neutrality.",
+                        feedbackSi: "දෘශ්‍යමාන ගැටුම මනාව විසඳන ලදී. ඔබ සීමා මායිම් ආරක්ෂා කරගනිමින්, ආයතනයේ මධ්‍යස්ථභාවය සහ විනිවිදභාවය තහවුරු කළේය.",
+                        type: "principled"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                titleEn: "The Ambiguous Corporate Gift",
+                titleSi: "විදේශීය ආයෝජන සහ සංස්කෘතික ත්‍යාග",
+                descEn: "Following successful completion of a real estate transaction, an overseas investor offers you a luxury personal wristwatch. The company handbook explicitly bans cash kickbacks but is unclear on cultural tokens.",
+                descSi: "විශාල නිවාස ව්‍යාපෘතියක් සාර්ථකව නිම කිරීමෙන් පසුව, විදේශීය ආයෝජකයා ඔබට මිල අධික පෞද්ගලික අත් ඔරලෝසුවක් ත්‍යාග කරයි. ආයතනික රීති මගින් මූල්‍ය කොමිස් තහනම් කර ඇතත් සංස්කෘතික ත්‍යාග පිළිබඳව පැහැදිලි සීමාවක් දක්වා නැත.",
+                choices: [
+                    {
+                        textEn: "Accept the watch personally as a harmless cultural courtesy",
+                        textSi: "සංස්කෘතික ගෞරවයක් ලෙස සලකා ත්‍යාගය පෞද්ගලිකව භාරගන්න",
+                        reputationImpact: -15,
+                        feedbackEn: "Slippery Slope trigger! Accepting high-value tokens blurs the objective boundary, paving the path to severe compliance drift.",
+                        feedbackSi: "ලිස්සන සුළු බෑවුමක ආරම්භයකි! මෙවැනි මිල අධික ත්‍යාග පෞද්ගලිකව භාරගැනීම මඟින් අනාගතයේදී ඔබගේ වෘත්තීය සීමාවන් ලිහිල් විය හැක.",
+                        type: "deceptive"
+                    },
+                    {
+                        textEn: "Decline personal possession and request to display it in corporate lobby",
+                        textSi: "ත්‍යාගය පෞද්ගලිකව ගැනීම ප්‍රතික්ෂේප කර ආයතනයේ ප්‍රදර්ශනයට තබන්න",
+                        reputationImpact: 10,
+                        feedbackEn: "Deontological model applied correctly. You protected corporate integrity while preserving the client relationship diplomatically.",
+                        feedbackSi: "සාර්ථක උපාය මාර්ගික තීරණයකි. ඔබ පාරිභෝගිකයාගේ හිත සතුටු කරන අතරම ආයතනික ගෞරවය සහ සදාචාරය ආරක්ෂා කළේය.",
+                        type: "principled"
+                    }
+                ]
+            },
+            {
+                id: 4,
+                titleEn: "Colombo Port City Logistics Tender",
+                titleSi: "කොළඹ වරාය නගරයේ ලොජිස්ටික් ටෙන්ඩරය",
+                descEn: "Three weeks prior to submitting a bid for Colombo Port City logistics, Vice President Rohan Silva receives an anonymous drop containing competitor layout sheets and pricing. The CFO urges AIS to use it. Rohan must choose alignment.",
+                descSi: "කොළඹ වරාය නගරයේ වටිනා ව්‍යාපෘතියකට ලංසු ඉදිරිපත් කිරීමට සති තුනකට පෙර, රොහාන් සිල්වාට තම ප්‍රධාන තරඟකාරී ආයතනයේ රහස්‍ය මිල ගණන් සහ සැලසුම් ලැබුණි. මූල්‍ය නිලධාරියා පවසන්නේ 'අප මෙය නොකළහොත්, අපගේ තරඟකරුවන් අපට එරෙහිව මෙවැනි දේ කරනු ඇත.'",
+                choices: [
+                    {
+                        textEn: "Use leaked competitor data to undercut the bid (Deceptive shortcut)",
+                        textSi: "ලැබුණු රහස්‍ය දත්ත භාවිතා කර ලංසුව ඉදිරිපත් කරන්න (වංචනික කෙටි මාවත)",
+                        reputationImpact: -50,
+                        feedbackEn: "Systemic Fraud. Rohan compromised the long-term foreign direct investment reputation of Sri Lanka's Special Economic Zone.",
+                        feedbackSi: "ක්‍රමානුකූල වංචාවකි. කෙටි කාලීන ලාභ වෙනුවෙන් ශ්‍රී ලංකාවේ ආයෝජන කීර්තිය පාවා දීමකි.",
+                        type: "deceptive"
+                    },
+                    {
+                        textEn: "Discard data, alert Tender Board, and submit original AIS honest proposal",
+                        textSi: "දත්ත ප්‍රතික්ෂේප කර ටෙන්ඩර් මණ්ඩලයට දැනුම් දෙන්න, මුල් සැලසුම ඉදිරිපත් කරන්න",
+                        reputationImpact: 20,
+                        feedbackEn: "Absolute Leadership. Rohan used the Multi-Lens Matrix to decline tainted data, securing Colombo Port City's institutional trust.",
+                        feedbackSi: "විශිෂ්ඨ නායකත්වයකි! රොහාන් සදාචාරාත්මක න්‍යාය රාමුව මත පිහිටා දූෂිත දත්ත ප්‍රතික්ෂේප කළේය.",
+                        type: "principled"
+                    }
+                ]
+            }
+        ];
+
+        window.onload = function () {
+            setLanguage('EN');
+            loadScenario(1);
+            switchSyllabusLesson(0);
+
+            // Set up initial calculator row variables focusing on Self-Governance forces
+            addStakeholderRow("Personal Integrity", 1.0, 10);
+            addStakeholderRow("Executive Status", 0.8, -5);
+            addStakeholderRow("Public Trust", 0.9, -9);
+            
+            buildQuiz();
+            updateManifestoPreview();
+        };
+
+        // NAVIGATION TABS CONTROL
+        function switchTab(tabId) {
+            playSynthSound('click');
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
+            
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('active-tab');
+                btn.classList.remove('text-amber-500');
+                btn.classList.add('text-slate-400');
+            });
+
+            const targetPane = document.getElementById(`pane-${tabId}`);
+            if (targetPane) targetPane.classList.remove('hidden');
+
+            const activeTabButton = document.getElementById(`tab-${tabId}`);
+            if (activeTabButton) {
+                activeTabButton.classList.add('active-tab');
+                activeTabButton.classList.remove('text-slate-400');
+                activeTabButton.classList.add('text-amber-500');
+            }
+
+            visitedPanes.add(tabId);
+            const progress = Math.round((visitedPanes.size / 5) * 100);
+            safeSetText('progressPct', `${progress}%`);
+            
+            recalculateUnifiedScore();
+        }
+
+        // BILINGUAL ADAPTATION ENGINE (100% Comprehensive Translate)
+        function setLanguage(lang) {
+            playSynthSound('click');
+            currentLang = lang;
+            const dict = translationDict[lang];
+
+            // Toggle Visual Selection Class of Buttons
+            if (lang === 'EN') {
+                safeAddClass('btn-lang-en', 'bg-amber-500');
+                safeRemoveClass('btn-lang-en', 'text-slate-400');
+                safeAddClass('btn-lang-en', 'text-slate-950');
+
+                safeRemoveClass('btn-lang-si', 'bg-amber-500');
+                safeAddClass('btn-lang-si', 'text-slate-400');
+                safeRemoveClass('btn-lang-si', 'text-slate-950');
+            } else {
+                safeAddClass('btn-lang-si', 'bg-amber-500');
+                safeRemoveClass('btn-lang-si', 'text-slate-400');
+                safeAddClass('btn-lang-si', 'text-slate-950');
+
+                safeRemoveClass('btn-lang-en', 'bg-amber-500');
+                safeAddClass('btn-lang-en', 'text-slate-400');
+                safeRemoveClass('btn-lang-en', 'text-slate-950');
+            }
+
+            // Loop and replace each dictionary item found in UI
+            Object.keys(dict).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) {
+                    if (el.tagName === 'INPUT') {
+                        el.placeholder = dict[key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = dict[key];
+                    } else {
+                        el.innerText = dict[key];
+                    }
+                }
+            });
+
+            // Update sub contents
+            switchSyllabusLesson(activeLessonIndex);
+            
+            const simEl = document.getElementById('simContent');
+            const activeSimId = simEl ? parseInt(simEl.getAttribute('data-active-scene') || "1") : 1;
+            loadScenario(activeSimId);
+            
+            buildQuiz();
+            updateManifestoPreview();
+            recalculateUnifiedScore();
+        }
+
+        // QUEST ROADMAP NAVIGATION
+        function switchSyllabusLesson(index) {
+            playSynthSound('click');
+            activeLessonIndex = index;
+            const lesson = syllabusLessons[index];
+
+            // Highlight subtabs
+            document.querySelectorAll('[id^="subtab-"]').forEach(btn => btn.classList.remove('active-sub-tab'));
+            const activeSub = document.getElementById(`subtab-${index}`);
+            if (activeSub) activeSub.classList.add('active-sub-tab');
+
+            // Apply unit dynamic names in selection menu
+            for (let i = 0; i < syllabusLessons.length; i++) {
+                safeSetText(`menuUnit-${i}`, currentLang === 'EN' ? syllabusLessons[i].titleEn : syllabusLessons[i].titleSi);
+            }
+
+            const title = currentLang === 'EN' ? lesson.titleEn : lesson.titleSi;
+            const bodyContent = currentLang === 'EN' ? lesson.textEn : lesson.textSi;
+
+            const syllabusHTML = `
+                <div class="space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                        <span class="text-[10px] font-bold text-amber-500 font-mono tracking-widest uppercase bg-amber-500/10 px-2.5 py-1 rounded-md">Quest Level 0${lesson.id + 1}</span>
+                    </div>
+                    <h2 class="text-lg sm:text-2xl font-extrabold text-slate-100 tracking-tight leading-none">${title}</h2>
+                    <div class="text-xs sm:text-sm text-slate-300 leading-relaxed space-y-4 pt-2">
+                        ${bodyContent}
+                    </div>
+                </div>
+            `;
+            safeSetHTML('syllabusReaderBody', syllabusHTML);
+
+            // Setup Concept checkpoint check
+            safeSetText('selfCheckId', `Quest 0${lesson.id + 1}`);
+            safeSetText('selfCheckQuestion', currentLang === 'EN' ? lesson.checkQuestion : lesson.checkQuestionSi);
+            safeAddClass('selfCheckFeedback', 'hidden');
+
+            const checkActions = document.getElementById('selfCheckActions');
+            if (checkActions) {
+                checkActions.innerHTML = '';
+                lesson.checkOptions.forEach((opt, idx) => {
+                    const optText = currentLang === 'EN' ? opt.textEn : opt.textSi;
+                    const btn = document.createElement('button');
+                    btn.className = "px-4 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 text-slate-300 rounded-xl text-xs font-bold transition duration-200";
+                    btn.innerText = optText;
+                    btn.onclick = () => submitQuickCheck(opt, lesson.id);
+                    checkActions.appendChild(btn);
+                });
+            }
+        }
+
+        // QUICK CHECKS LOGIC WITH GAME SOUND FX
+        function submitQuickCheck(opt, lessonId) {
+            const feedbackBox = document.getElementById('selfCheckFeedback');
+            if (!feedbackBox) return;
+
+            feedbackBox.classList.remove('hidden', 'bg-green-500/10', 'border-green-500/30', 'text-green-400', 'bg-red-500/10', 'border-red-500/30', 'text-red-400');
+            
+            if (opt.isCorrect) {
+                playSynthSound('correct');
+                feedbackBox.classList.add('bg-green-500/10', 'border', 'border-green-500/30', 'text-green-400');
+                feedbackBox.innerHTML = `<strong>Correct! / නිවැරදියි!</strong> ${opt.explanation}`;
+                
+                unlockBadge(0, "First Quest Clear", "Cleared first concept check with success.");
+
+                // Add XP points
+                addXP(25);
+                updateRPGStats(10, 5, 5);
+
+                const lessonIcon = document.getElementById(`lessonIcon-${lessonId}`);
+                if (lessonIcon) {
+                    lessonIcon.className = "fa-solid fa-circle-check text-green-500 ml-1";
+                }
+            } else {
+                playSynthSound('wrong');
+                feedbackBox.classList.add('bg-red-500/10', 'border', 'border-red-500/30', 'text-red-400');
+                feedbackBox.innerHTML = `<strong>Incorrect. / වැරදියි.</strong> ${opt.explanation}`;
+            }
+        }
+
+        // XP PROGRESS LEVEL SYSTEMS
+        function addXP(amount) {
+            characterXP = Math.min(100, characterXP + amount);
+            safeSetText('xpRawText', `${characterXP} / 100 XP`);
+            safeStyleWidth('characterXpBar', `${characterXP}%`);
+
+            // Evolve levels
+            if (characterXP >= 80 && currentLevel < 3) {
+                currentLevel = 3;
+                triggerLevelUp("Post-Conventional Master", "Autonomous, self-leadership unlocked.");
+            } else if (characterXP >= 50 && characterXP < 80 && currentLevel < 2) {
+                currentLevel = 2;
+                triggerLevelUp("Conventional Executive", "Social duty and structural compliance unlocked.");
+            }
+        }
+
+        function triggerLevelUp(name, desc) {
+            playSynthSound('levelUp');
+            safeSetText('headerRankLabel', `Level ${currentLevel} (${name.split(' ')[0]})`);
+            safeSetText('levelNameText', name);
+            safeSetText('levelDescText', desc);
+            safeRemoveClass('levelUpModal', 'hidden');
+            safeAddClass('levelUpModal', 'flex');
+        }
+
+        function closeLevelUpModal() {
+            safeAddClass('levelUpModal', 'hidden');
+            safeRemoveClass('levelUpModal', 'flex');
+        }
+
+        // RPG Stats indicators
+        function updateRPGStats(integ, cour, trans) {
+            const integrityEl = document.getElementById('statIntegrity');
+            const courageEl = document.getElementById('statCourage');
+            const transEl = document.getElementById('statTransparency');
+
+            if (integrityEl) {
+                let currentInteg = parseInt(integrityEl.innerText) + integ;
+                integrityEl.innerText = `${Math.min(100, Math.max(0, currentInteg))}%`;
+            }
+            if (courageEl) {
+                let currentCour = parseInt(courageEl.innerText) + cour;
+                courageEl.innerText = `${Math.min(100, Math.max(0, currentCour))}%`;
+            }
+            if (transEl) {
+                let currentTrans = parseInt(transEl.innerText) + trans;
+                transEl.innerText = `${Math.min(100, Math.max(0, currentTrans))}%`;
+            }
+        }
+
+        // UNLOCK ACHIEVEMENT TOAST ALERTS
+        function unlockBadge(id, title, desc) {
+            if (unlockedBadges.has(id)) return;
+            unlockedBadges.add(id);
+
+            const badgeEl = document.getElementById(`badge-${id}`);
+            if (badgeEl) {
+                badgeEl.classList.remove('opacity-40');
+                badgeEl.classList.add('border-amber-500', 'bg-amber-500/10', 'text-slate-100');
+            }
+
+            // Animate floating toast
+            safeSetText('toastTitle', title);
+            safeSetText('toastDesc', desc);
+            
+            const toast = document.getElementById('achievementToast');
+            if (toast) {
+                toast.classList.remove('translate-x-96');
+                setTimeout(() => {
+                    toast.classList.add('translate-x-96');
+                }, 4000);
+            }
+        }
+
+        // LOAD BATTLE SCENARIO
+        function loadScenario(id) {
+            playSynthSound('click');
+            const scenario = scenarios.find(s => s.id === id);
+            if (!scenario) return;
+
+            document.querySelectorAll('[id^="btn-scene-"]').forEach(btn => {
+                btn.classList.remove('border-amber-500', 'bg-slate-900/90');
+                btn.classList.add('border-slate-800', 'bg-slate-900/60');
+            });
+            const activeBtn = document.getElementById(`btn-scene-${id}`);
+            if (activeBtn) {
+                activeBtn.classList.add('border-amber-500', 'bg-slate-900/90');
+            }
+
+            const title = currentLang === 'EN' ? scenario.titleEn : scenario.titleSi;
+            const desc = currentLang === 'EN' ? scenario.descEn : scenario.descSi;
+
+            const contentDiv = document.getElementById('simContent');
+            if (contentDiv) {
+                contentDiv.setAttribute('data-active-scene', id);
+                contentDiv.innerHTML = `
+                    <div class="flex items-center space-x-3 text-amber-500 font-bold text-xs uppercase tracking-wider font-mono">
+                        <i class="fa-solid fa-gamepad animate-bounce"></i>
+                        <span>Battle Node 0${scenario.id}</span>
+                    </div>
+                    <h3 class="text-base sm:text-xl font-bold text-slate-100">${title}</h3>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/40 p-4 rounded-xl border border-slate-800/80">${desc}</p>
+                `;
+            }
+
+            safeAddClass('simNotification', 'hidden');
+
+            const actionsDiv = document.getElementById('simActions');
+            if (actionsDiv) {
+                actionsDiv.innerHTML = '';
+                scenario.choices.forEach((choice, idx) => {
+                    const choiceText = currentLang === 'EN' ? choice.textEn : choice.textSi;
+                    const btn = document.createElement('button');
+                    btn.className = "p-4 rounded-xl text-left text-xs sm:text-sm font-semibold border border-slate-800 bg-slate-900/50 hover:bg-slate-900 hover:border-amber-500/50 transition duration-300 flex items-start gap-3 transform active:scale-95 min-h-[50px]";
+                    btn.innerHTML = `
+                        <span class="w-6 h-6 rounded-full bg-slate-950 text-[10px] font-bold text-amber-500 flex items-center justify-center border border-slate-800 shrink-0 mt-0.5">${String.fromCharCode(65 + idx)}</span>
+                        <span class="text-slate-300 hover:text-slate-100 leading-relaxed">${choiceText}</span>
+                    `;
+                    btn.onclick = () => executeChoice(choice, id);
+                    actionsDiv.appendChild(btn);
+                });
+            }
+        }
+
+        function executeChoice(choice, id) {
+            const alertBox = document.getElementById('simNotification');
+            const notifIcon = document.getElementById('notifIcon');
+            const notifMessage = document.getElementById('notifMessage');
+
+            if (!alertBox || !notifIcon || !notifMessage) return;
+
+            alertBox.className = "p-4 rounded-xl text-xs sm:text-sm font-medium transition duration-300 flex items-start gap-3 mt-4 ";
+            if (choice.type === "principled") {
+                playSynthSound('correct');
+                alertBox.classList.add("bg-green-500/10", "border", "border-green-500/30", "text-green-400");
+                notifIcon.className = "fa-solid fa-circle-check text-green-500 mt-0.5 shrink-0";
+                
+                addXP(25);
+                updateRPGStats(15, 10, 15);
+                unlockBadge(id, "Arena Level Victory", `Solved scenario level ${id} successfully.`);
+            } else {
+                playSynthSound('wrong');
+                alertBox.classList.add("bg-red-500/10", "border", "border-red-500/30", "text-red-400");
+                notifIcon.className = "fa-solid fa-triangle-exclamation text-red-500 mt-0.5 shrink-0";
+                
+                reputationScore = Math.max(10, reputationScore - 20);
+                updateRPGStats(-10, -5, -5);
+            }
+
+            const feedbackText = currentLang === 'EN' ? choice.feedbackEn : choice.feedbackSi;
+            notifMessage.innerText = feedbackText;
+            alertBox.classList.remove('hidden');
+        }
+
+        // MATRIX CORE SANDBOX PRESETS
+        function loadSyllabusPreset() {
+            playSynthSound('correct');
+            const container = document.getElementById('stakeholderContainer');
+            if (container) container.innerHTML = '';
+
+            addStakeholderRow(currentLang === 'EN' ? "Rohan's Status" : "රොහාන්ගේ කීර්තිය", 0.9, 10);
+            addStakeholderRow(currentLang === 'EN' ? "AIS Workforce" : "AIS සේවක සුරක්ෂිතභාවය", 0.8, -4);
+            addStakeholderRow(currentLang === 'EN' ? "Regional Investment Trust" : "ආයෝජන විශ්වාසනීයත්වය", 0.9, -9);
+            
+            const dilemmaTitle = document.getElementById('dilemmaTitle');
+            if (dilemmaTitle) dilemmaTitle.value = currentLang === 'EN' ? "Rohan Silva: Leaked competitor tender layout sheets" : "රොහාන් සිල්වා: කොළඹ වරාය නගරයේ ටෙන්ඩරය සහ සොරකම් කළ දත්ත";
+            
+            const deontologySelect = document.getElementById('deontologySelect');
+            if (deontologySelect) deontologySelect.value = "-10";
+            
+            const virtueSelect = document.getElementById('virtueSelect');
+            if (virtueSelect) virtueSelect.value = "-10";
+            
+            const moralEgoSlider = document.getElementById('moralEgoSlider');
+            if (moralEgoSlider) moralEgoSlider.value = "1"; // Pre-Conventional
+
+            recalculateUnifiedScore();
+        }
+
+        // ADD STAKEHOLDER ROW
+        function addStakeholderRow(name = "", prob = 0.5, value = 0) {
+            playSynthSound('click');
+            const container = document.getElementById('stakeholderContainer');
+            if (!container) return;
+            const rowCount = container.children.length;
+
+            const row = document.createElement('div');
+            row.className = "grid grid-cols-1 md:grid-cols-12 gap-3 p-3 bg-slate-950/80 rounded-xl border border-slate-800 items-center transition duration-300";
+            row.id = `st-row-${rowCount}`;
+
+            row.innerHTML = `
+                <div class="md:col-span-4">
+                    <input type="text" value="${name}" placeholder="${currentLang === 'EN' ? 'Affected Force' : 'බලපෑමට ලක්වන බලවේගය'}" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-amber-500 row-name min-h-[40px]">
+                </div>
+                <div class="md:col-span-3 flex items-center space-x-2">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase shrink-0 font-mono">P(i):</span>
+                    <input type="range" min="0" max="1" step="0.1" value="${prob}" oninput="recalculateUnifiedScore()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 row-prob">
+                    <span class="text-xs text-slate-400 font-mono w-6 shrink-0 text-center font-bold">0.5</span>
+                </div>
+                <div class="md:col-span-4 flex items-center space-x-2">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase shrink-0 font-mono">V(i):</span>
+                    <input type="range" min="-10" max="10" step="1" value="${value}" oninput="recalculateUnifiedScore()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 row-val">
+                    <span class="text-xs text-slate-400 font-mono w-6 shrink-0 text-center font-bold">0</span>
+                </div>
+                <div class="md:col-span-1 text-center">
+                    <button onclick="removeStakeholderRow(${rowCount})" class="text-xs hover:text-red-500 text-slate-500 transition duration-150 min-h-[44px] min-w-[44px] flex items-center justify-center">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(row);
+            recalculateUnifiedScore();
+        }
+
+        function removeStakeholderRow(idx) {
+            playSynthSound('wrong');
+            const row = document.getElementById(`st-row-${idx}`);
+            if (row) {
+                row.remove();
+                recalculateUnifiedScore();
+            }
+        }
+
+        // DYNAMIC CALCULATION SYSTEM
+        function recalculateUnifiedScore() {
+            const rows = document.querySelectorAll('#stakeholderContainer > div');
+            let sumU = 0;
+            let totalWeights = 0;
+
+            rows.forEach(row => {
+                const probSlider = row.querySelector('.row-prob');
+                const valSlider = row.querySelector('.row-val');
+                if (!probSlider || !valSlider) return;
+
+                const probLabel = probSlider.nextElementSibling;
+                const valLabel = valSlider.nextElementSibling;
+
+                const p = parseFloat(probSlider.value);
+                const v = parseFloat(valSlider.value);
+
+                if (probLabel) probLabel.innerText = p.toFixed(1);
+                if (valLabel) valLabel.innerText = (v > 0 ? `+${v}` : v);
+
+                sumU += p * v;
+                totalWeights += 1;
+            });
+
+            // Adjust sum by moral level weight
+            const moralEgoSlider = document.getElementById('moralEgoSlider');
+            const moralStage = moralEgoSlider ? parseInt(moralEgoSlider.value) : 3;
+            const egoIndicator = document.getElementById('egoStateIndicator');
+            let stageMultiplier = 1;
+
+            if (egoIndicator) {
+                if (moralStage === 1) {
+                    egoIndicator.innerText = currentLang === 'EN' ? "Pre-Conventional" : "පූර්ව-සම්මුතික";
+                    egoIndicator.className = "text-xs font-mono font-bold text-red-400 bg-red-500/15 px-2.5 py-1 rounded";
+                    stageMultiplier = 0.5;
+                } else if (moralStage === 2) {
+                    egoIndicator.innerText = currentLang === 'EN' ? "Conventional" : "සම්මුතික";
+                    egoIndicator.className = "text-xs font-mono font-bold text-amber-400 bg-amber-500/15 px-2.5 py-1 rounded";
+                    stageMultiplier = 0.8;
+                } else {
+                    egoIndicator.innerText = currentLang === 'EN' ? "Post-Conventional" : "පශ්චාත්-සම්මුතික";
+                    egoIndicator.className = "text-xs font-mono font-bold text-green-400 bg-green-500/15 px-2.5 py-1 rounded";
+                    stageMultiplier = 1.2;
+                }
+            }
+
+            let finalU = totalWeights > 0 ? (sumU * stageMultiplier) : 0.00;
+            safeSetText('gaugeValue', (finalU >= 0 ? "+" : "") + finalU.toFixed(2));
+
+            const deontologySel = document.getElementById('deontologySelect');
+            const deontologyScore = deontologySel ? parseInt(deontologySel.value) : 10;
+            const virtueSel = document.getElementById('virtueSelect');
+            const virtueScore = virtueSel ? parseInt(virtueSel.value) : 10;
+
+            let utilPct = Math.max(0, Math.min(100, ((finalU + 10) / 20) * 100));
+            safeStyleWidth('utilitarianBar', `${utilPct}%`);
+            safeSetText('utilitarianScoreText', `${utilPct.toFixed(0)}%`);
+
+            let deontologyPct = Math.max(0, Math.min(100, ((deontologyScore + 10) / 20) * 100));
+            safeStyleWidth('deontologyBar', `${deontologyPct}%`);
+            safeSetText('deontologyScoreText', `${deontologyPct.toFixed(0)}%`);
+
+            let virtuePct = Math.max(0, Math.min(100, ((virtueScore + 10) / 20) * 100));
+            safeStyleWidth('virtueBar', `${virtuePct}%`);
+            safeSetText('virtueScoreText', `${virtuePct.toFixed(0)}%`);
+
+            const textDiagnosisLabel = document.getElementById('matrixDiagnosisLabel');
+            const textDiagnosisDesc = document.getElementById('matrixDiagnosisDesc');
+
+            if (!textDiagnosisLabel || !textDiagnosisDesc) return;
+
+            if (totalWeights === 0) {
+                textDiagnosisLabel.innerText = currentLang === 'EN' ? "Matrix Not Configured" : "රාමුව සකස් කර නැත";
+                textDiagnosisDesc.innerText = currentLang === 'EN' ? "Add stakeholder values to calculate proactive alignment." : "තීරණය සකස් කිරීම සඳහා වම් පසින් බලපෑම් කරන්නන් ඇතුළත් කරන්න.";
+                return;
+            }
+
+            if (finalU > 2 && deontologyScore > 0 && virtueScore > 0 && moralStage === 3) {
+                textDiagnosisLabel.innerText = currentLang === 'EN' ? "CHARACTER GREEN LIGHT" : "පූර්ණ සදාචාර අනුමැතිය (Green Light)";
+                textDiagnosisLabel.className = "text-lg font-bold text-green-400";
+                textDiagnosisDesc.innerText = currentLang === 'EN' 
+                    ? "Principled Autonomy Active. This choice satisfies highest utilitarian benefit while entirely maintaining your character capital."
+                    : "මෙම තීරණය මඟින් සියලු පාර්ශවකරුවන්ට සාධාරණ ප්‍රතිලාභ ලැබෙන අතර, සදාචාරාත්මක නීති සහ වෘත්තීය ගෞරවයද උපරිමයෙන් ආරක්ෂා වේ.";
+            } else if (finalU < -1 || deontologyScore < 0 || virtueScore < 0 || moralStage === 1) {
+                textDiagnosisLabel.innerText = currentLang === 'EN' ? "BOUNDARY COLLAPSE WARNING" : "අවදානම් අනතුරු ඇඟවීම (Red Flag)";
+                textDiagnosisLabel.className = "text-lg font-bold text-red-400";
+                textDiagnosisDesc.innerText = currentLang === 'EN'
+                    ? "Identity Compromise. You are operating from compliance fear or immediate personal vanity. Halt operations to avoid reputational damage."
+                    : "බරපතල පෞරුෂත්ව සීමාවන් උල්ලංඝනය වීමක් හඳුනාගෙන ඇත. කෙටි කාලීන ලාභ පෙනෙන්නට තිබුණද, මෙම තීරණය දිගු කාලීනව හානිකර වේ.";
+            } else {
+                textDiagnosisLabel.innerText = currentLang === 'EN' ? "CONVENTIONAL OPTICAL COMPROMISE" : "අසම්පූර්ණ අළු කලාපය (Grey Area)";
+                textDiagnosisLabel.className = "text-lg font-bold text-amber-500";
+                textDiagnosisDesc.innerText = currentLang === 'EN'
+                    ? "Seeking social approval or rules compliance without deep internal conviction. Recalibrate boundaries."
+                    : "තීරණයෙහි යම් සදාචාරාත්මක අවදානමක් පවතී. ලිස්සන සුළු බෑවුමක වැටීමෙන් වැළකීම සඳහා සීමා මායිම් නැවත පරීක්ෂා කර බලන්න.";
+            }
+        }
+
+        // SLOPE DIAGNOSTIC SLIDE QUIZ SYSTEM
+        function buildQuiz() {
+            const quizContainer = document.getElementById('quizContent');
+            if (!quizContainer) return;
+            
+            const currentQ = quizQuestions[quizIndex];
+            const questionTitle = currentLang === 'EN' ? currentQ.qEn : currentQ.qSi;
+            
+            quizContainer.innerHTML = `
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-amber-500 tracking-wider uppercase font-mono">Factor 0${quizIndex + 1}</span>
+                    <h4 class="text-sm sm:text-base font-bold text-slate-100 leading-snug">${questionTitle}</h4>
+                </div>
+                <div class="space-y-3">
+                    ${currentQ.options.map((opt, i) => {
+                        const optText = currentLang === 'EN' ? opt.textEn : opt.textSi;
+                        const isSelected = quizAnswers[quizIndex] === i;
+                        return `
+                            <button onclick="selectQuizAnswer(${i})" class="w-full text-left p-4 rounded-xl border text-xs sm:text-sm transition duration-200 flex items-center justify-between min-h-[50px] ${isSelected ? 'border-amber-500 bg-amber-500/10 text-slate-100' : 'border-slate-800 bg-slate-900/40 text-slate-300 hover:bg-slate-900' }">
+                                <span class="pr-3 leading-normal">${optText}</span>
+                                <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? 'border-amber-500 bg-amber-500' : 'border-slate-600' }">
+                                    ${isSelected ? '<i class="fa-solid fa-check text-[10px] text-slate-950"></i>' : ''}
+                                </div>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            safeSetText('quizCounter', `${currentLang === 'EN' ? 'Question' : 'ප්‍රශ්නය'} ${quizIndex + 1} of ${quizQuestions.length}`);
+            
+            const btnPrev = document.getElementById('btnPrevQuiz');
+            if (btnPrev) {
+                btnPrev.disabled = (quizIndex === 0);
+                btnPrev.style.opacity = (quizIndex === 0) ? '0.5' : '1';
+            }
+        }
+
+        function selectQuizAnswer(optIdx) {
+            playSynthSound('click');
+            quizAnswers[quizIndex] = optIdx;
+            buildQuiz();
+            calculateSlopeVulnerability();
+        }
+
+        function prevQuizQuestion() {
+            if (quizIndex > 0) {
+                quizIndex--;
+                buildQuiz();
+            }
+        }
+
+        function nextQuizQuestion() {
+            if (quizIndex < quizQuestions.length - 1) {
+                quizIndex++;
+                buildQuiz();
+            } else {
+                calculateSlopeVulnerability(true);
+            }
+        }
+
+        function calculateSlopeVulnerability(showComplete = false) {
+            let score = 0;
+            let questionsAnswered = 0;
+
+            quizAnswers.forEach((ans, idx) => {
+                if (ans !== null) {
+                    score += quizQuestions[idx].options[ans].weight;
+                    questionsAnswered++;
+                }
+            });
+
+            const normalizedPct = questionsAnswered > 0 ? (score / (questionsAnswered * 5)) * 100 : 0;
+
+            const slopeLine = document.getElementById('slopeLine');
+            if (slopeLine) {
+                const strokeOffset = 180 - (180 * (normalizedPct / 100));
+                slopeLine.setAttribute('stroke-dashoffset', strokeOffset);
+            }
+
+            const slopeNode = document.getElementById('slopeNode');
+            if (slopeNode) {
+                const cx = 10 + (180 * (normalizedPct / 100));
+                const cy = 90 - (60 * (normalizedPct / 100));
+                slopeNode.setAttribute('cx', cx);
+                slopeNode.setAttribute('cy', cy);
+            }
+
+            const titleLabel = document.getElementById('auditTitleLabel');
+            const descLabel = document.getElementById('auditDescLabel');
+            const strategyText = document.getElementById('prescribedStrategyText');
+
+            if (!titleLabel || !descLabel || !strategyText) return;
+
+            if (questionsAnswered === 0) {
+                titleLabel.innerText = currentLang === 'EN' ? "Pending Audit Check" : "පිළිතුරු ලැබෙන තෙක් බලා සිටී";
+                descLabel.innerText = currentLang === 'EN' ? "Select options to review potential boundary drift." : "සදාචාරාත්මක සීමාවන් ලිහිල් වීමේ අවදානම ගණනය කිරීමට වම්පස ඇති පරීක්ෂණය සම්පූර්ණ කරන්න.";
+                return;
+            }
+
+            if (normalizedPct < 30) {
+                titleLabel.innerText = currentLang === 'EN' ? "INTERNAL LOCUS: INTEGRITY ANCHORED" : "නොසැලෙන සදාචාරය (Secured)";
+                titleLabel.className = "text-lg font-bold text-green-400";
+                descLabel.innerText = currentLang === 'EN' ? "Excellent emotional control and post-conventional maturity." : "ඔබගේ සදාචාරාත්මක සීමාවන් දැඩිව පවතී. ලිස්සන සුළු බෑවුමක වැටීමේ අවදානමක් නැත.";
+                strategyText.innerText = currentLang === 'EN' 
+                    ? "Keep over-indexing on transparency. Refuse peer conformity. Your personality is driven by deep internal standards."
+                    : "විනිවිදභාවය තවදුරටත් ආරක්ෂා කරගන්න. තෙවන පාර්ශවීය සබඳතා සහ හවුල්කරුවන්ගේ දත්ත නිතර විගණනයට ලක් කරන්න.";
+            } else if (normalizedPct >= 30 && normalizedPct <= 65) {
+                titleLabel.innerText = currentLang === 'EN' ? "PEOPLE-PLEASING / BASELINE DECAY" : "1 වන පියවර: සීමා විකෘති වීම (Distortion)";
+                titleLabel.className = "text-lg font-bold text-amber-500";
+                descLabel.innerText = currentLang === 'EN' ? "Approval-seeking tendencies detected. You risk compromising boundaries." : "සුළු පද්ධතිමය මඟ හැරීම් සිදුවේ. සීමාවන් නැවත දැඩි ලෙස ක්‍රියාත්මක කළ යුතුය.";
+                strategyText.innerText = currentLang === 'EN'
+                    ? "Prescribe explicit non-negotiable boundaries. Practice saying 'no' to colleagues when rules collapse."
+                    : "ව්‍යාපෘති නිම කිරීමේදී නිවැරදි නිල දත්ත පමණක් සහතික කිරීමට දැඩි පියවර ගන්න. තොරතුරු සැඟවීමේ සිදුරු වසා දැමීමට වාර්තාකරණ ක්‍රමවේද වෙනස් කරන්න.";
+            } else {
+                titleLabel.innerText = currentLang === 'EN' ? "EXTERNAL LOCUS: DRIFT COLLAPSE" : "බරපතල පරිහානිය: සීමා කඩවීම (Collapse)";
+                titleLabel.className = "text-lg font-bold text-red-500";
+                descLabel.innerText = currentLang === 'EN' ? "High vulnerability to authority compliance or financial vanity traps." : "සදාචාරාත්මක සීමාවන් මුළුමනින්ම බිඳ වැටීමේ අනතුරක් පවතී. ඔබගේ වෘත්තීය කීර්තිය බේරාගැනීමට වහාම ක්‍රියාමාර්ග ගන්න.";
+                strategyText.innerText = currentLang === 'EN'
+                    ? "Seek coaching to move out of the external locus trap. Disclose challenges early to avoid catastrophic reputational bankruptcy."
+                    : "වහාම සීමා මායිම් දැඩි කරන්න. පවතින ගැටළු නිල වශයෙන් ආයතනයට දැනුම් දෙන්න. තීරණ ගැනීමේදී පෞද්ගලික වාසි තකා ක්‍රියා කිරීමෙන් වහාම වළකින්න.";
+            }
+        }
+
+        // VALUES MANIFESTO DRAFTING PREVIEW
+        function updateManifestoPreview() {
+            const nameInput = document.getElementById('manifestoName');
+            const name = nameInput && nameInput.value ? nameInput.value : (currentLang === 'EN' ? "Rohan Silva" : "රොහාන් සිල්වා");
+            
+            const anchorTypeSel = document.getElementById('manifestoAnchor');
+            const anchorType = anchorTypeSel ? anchorTypeSel.value : 'virtue';
+            
+            const boundaryText = document.getElementById('manifestoBoundary');
+            const boundary = boundaryText && boundaryText.value ? boundaryText.value : (currentLang === 'EN' ? "I will never utilize leaked competitor credentials or compromise professional integrity." : "කෙටි කාලීන ලාභ හෝ වාසි තකා තරඟකරුවන්ගේ රහස්‍ය දත්ත කිසිවිටෙකත් භාවිතා නොකරමි.");
+
+            safeSetText('manifestoTitleName', name.toUpperCase());
+            safeSetText('sigName', `${name.toUpperCase()} (SIGNATURE)`);
+
+            const output1 = document.getElementById('manifestoOutput1');
+            const output2 = document.getElementById('manifestoOutput2');
+            const output3 = document.getElementById('manifestoOutput3');
+
+            if (!output1 || !output2 || !output3) return;
+
+            if (currentLang === 'EN') {
+                output1.innerText = "I commit to evaluating professional dilemmas through structured stakeholder calculation, completely rejecting uncalibrated gut feeling bias.";
+                
+                if (anchorType === 'virtue') {
+                    output2.innerText = "My decisions operate from autonomous inner virtues which hold professional honor as a primary, non-negotiable state.";
+                } else if (anchorType === 'duty') {
+                    output2.innerText = "My decisions are anchored on duty-based universal obligations, honoring absolute commitments regardless of immediate corporate penalty outputs.";
+                } else {
+                    output2.innerText = "My decisions prioritize proactive transparency, ensuring we disclose full system context to protect stakeholders over short-term vanity metrics.";
+                }
+
+                output3.innerText = `I pledge to defend my stated boundary rules: "${boundary}" recognizing that checking small compromises prevents moral erosion.`;
+            } else {
+                output1.innerText = "සහජ හැඟීම් මත පමණක් තීරණ ගැනීම ප්‍රතික්ෂේප කරමින්, ඕනෑම වෘත්තීය ගැටලුවක් බහුවිධ සදාචාරාත්මක න්‍යාය රාමුව ඔස්සේ තාර්කිකව විශ්ලේෂණය කිරීමට මම කැපවෙමි.";
+
+                if (anchorType === 'virtue') {
+                    output2.innerText = "බාහිර බලපෑම්වලට යටත් නොවී, තීරණ ගැනීම මගේ මූලික අනන්‍යතාවයේ කොටසක් සේ සලකමින් අභ්‍යන්තර සදාචාරාත්මක ගුණධර්ම මත පදනම්ව ක්‍රියා කරමි.";
+                } else if (anchorType === 'duty') {
+                    output2.innerText = "ආයතනික නීති රීතිවලට සහ විශ්වීය සාධාරණත්වයේ නියමයන්ට අනුකූලව, මගේ වෘත්තීය වගකීම් සහ යුතුකම් නොපිරිහෙලා ඉටු කිරීමට මම බැඳී සිටිමි.";
+                } else {
+                    output2.innerText = "කෙටි කාලීන වාසි තකා තොරතුරු සැඟවීම වෙනුවට, ආයතනයේ දිගු කාලීන සුරක්ෂිතභාවය වෙනුවෙන් උපායමාර්ගික විනිවිදභාවයෙන් කටයුතු කරමි.";
+                }
+
+                output3.innerText = `මා විසින් පනවා ඇති මූලික සීමාව වන "${boundary}" දැඩිව ආරක්ෂා කරන අතර, දෛනික කටයුතුවලදී කිසිදු සදාචාරාත්මක සම්මුතියකට නොපැමිණීමට වගබලා ගනිමි.`;
+            }
+        }
+
+        function copyManifestoText() {
+            playSynthSound('correct');
+            const nameInput = document.getElementById('manifestoName');
+            const name = nameInput && nameInput.value ? nameInput.value : "Proposed Executive";
+            const boundaryText = document.getElementById('manifestoBoundary');
+            const boundary = boundaryText && boundaryText.value ? boundaryText.value : "No compromises.";
+            
+            const manifestText = `
+Personal Values Blueprint
+=======================================
+Executive: ${name}
+Governing Framework: Multi-Lens Matrix Calculator
+Absolute Boundary Anchor: ${boundary}
+Drafted on: ${new Date().toLocaleDateString()}
+Generated via Character Study RPG.
+            `;
+            
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = manifestText;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+
+            const previewBox = document.getElementById('manifestoPreviewFrame');
+            if (previewBox) {
+                const alertTag = document.createElement('div');
+                alertTag.className = "absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-green-500 text-slate-950 font-bold text-xs rounded-full shadow-lg z-50 animate-bounce";
+                alertTag.innerText = currentLang === 'EN' ? "Copied Blueprint to Clipboard!" : "ප්‍රතිපත්ති සැලැස්ම පිටපත් කරගන්නා ලදී!";
+                previewBox.appendChild(alertTag);
+                setTimeout(() => alertTag.remove(), 2500);
+            }
+        }
+
+        function printManifesto() {
+            playSynthSound('click');
+            window.print();
+        }
+    </script>
+</body>
+</html>
